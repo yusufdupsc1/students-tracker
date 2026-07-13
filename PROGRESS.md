@@ -32,8 +32,10 @@ review: deleted the remaining dead prototype island, added durable storage +
 auto-snapshot undo, and gated the build behind typecheck with CI. No drift found
 this cycle between PROGRESS.md claims and actual code.
 
-## Next (P1 — explicitly out of scope this batch)
-- Route-level ErrorBoundary (F3).
-- Repository layer extraction (F6/F8/testability).
-- Lazy seed import + memoized dashboards + manualChunks (F7/F8).
-- Repository/print-parity tests (F11); result-policy strategy; encrypted backup; QR TS port.
+- [x] **P1 robustness + perf**: Route-level `ErrorBoundary` wraps every page (and the whole app) so a render crash shows a Bengali "retry" card instead of a blank screen (F3). `seedRealData` now dynamic-imports `seed.json`, so the 42 KB real dataset is a separate on-demand chunk loaded only on first run (F7). Dashboard derived computations wrapped in `useMemo` keyed on data (F7). Vendor `manualChunks` split react-vendor / dexie / recharts / xlsx (F8). Result: initial `index` chunk dropped from ~298 KB (94 KB gzip) to ~9.5 KB (4 KB gzip); seed data deferred. `verify` gate green.
+
+## Next (deferred — needs decision or larger scope)
+- Repository layer extraction (F6/F8/testability): wrap Dexie in a repo module so calc/UI are easier to unit-test without IndexedDB.
+- Repository/print-parity tests (F11): assert Report Card/MTR print output matches on-screen; result-policy strategy.
+- Encrypted backup export; QR IDs feature (TS port — was only in the deleted dead prototype).
+- Item 11: Lighthouse PWA installability + offline run (manual verification; not code).

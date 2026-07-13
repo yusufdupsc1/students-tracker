@@ -33,6 +33,25 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        // Split heavy/independent vendors so they cache separately and the
+        // on-demand chunks (recharts, xlsx) never bloat the initial load.
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+          if (id.includes('recharts') || id.includes('/d3-') || id.includes('victory-vendor'))
+            return 'recharts'
+          if (id.includes('xlsx') || id.includes('codepage')) return 'xlsx'
+          if (id.includes('qrcode')) return 'qrcode'
+          if (id.includes('dexie')) return 'dexie'
+          if (id.includes('react-router')) return 'react-vendor'
+          if (id.includes('react-dom') || id.includes('/react/')) return 'react-vendor'
+          return 'vendor'
+        }
+      }
+    }
+  },
   test: {
     environment: 'node',
     include: ['src/**/*.test.{js,ts}']

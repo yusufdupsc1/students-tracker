@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
   BarChart,
@@ -59,9 +60,43 @@ export default function Dashboard() {
   }
 
   const classMap = new Map(classes.map((c) => [c.id, c]))
-  const derivedAll = students
-    .map((s) => (classMap.get(s.classId) ? derive(s, classMap.get(s.classId)!, scale) : null))
-    .filter((d): d is Derived => d !== null)
+  const derivedAll = useMemo(
+    () =>
+      students
+        .map((s) => (classMap.get(s.classId) ? derive(s, classMap.get(s.classId)!, scale) : null))
+        .filter((d): d is Derived => d !== null),
+    [students, classes, scale]
+  )
+
+  const classSummaries = useMemo(
+    () =>
+      [...classes]
+        .sort((a, b) => a.id - b.id)
+        .map((cc) => {
+          const list = students.filter((s) => s.classId === cc.id)
+          const d = list.map((s) => derive(s, cc, scale))
+          const count = list.length
+          const a = d.map((x) => x.avg).filter((x) => !Number.isNaN(x))
+          const avg = a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0
+          const p = d.filter((x) => x.result === 'Pass').length
+          const f = d.filter((x) => x.result === 'Fail').length
+          const ev = p + f
+          const passRate = ev ? (p / ev) * 100 : 0
+          const status = count === 0 ? '—' : passRate >= EXCELLENT_PASS_RATE ? STATUS_EXCELLENT : STATUS_REVIEW
+          return { id: cc.id, name: cc.name, count, avg, passRate, status }
+        }),
+    [classes, students, scale]
+  )
+
+  const chartData = useMemo(
+    () =>
+      classSummaries.map((c) => ({
+        name: c.name,
+        avg: Math.round(c.avg * 10) / 10,
+        pass: Math.round(c.passRate * 10) / 10
+      })),
+    [classSummaries]
+  )
 
   const totalStudents = students.length
   const passed = derivedAll.filter((d) => d.result === 'Pass').length
@@ -71,28 +106,6 @@ export default function Dashboard() {
   const avgs = derivedAll.map((d) => d.avg).filter((a) => !Number.isNaN(a))
   const overallAvg = avgs.length ? avgs.reduce((a, b) => a + b, 0) / avgs.length : 0
   const aPlus = derivedAll.filter((d) => d.grade === 'A+').length
-
-  const classSummaries = [...classes]
-    .sort((a, b) => a.id - b.id)
-    .map((cc) => {
-      const list = students.filter((s) => s.classId === cc.id)
-      const d = list.map((s) => derive(s, cc, scale))
-      const count = list.length
-      const a = d.map((x) => x.avg).filter((x) => !Number.isNaN(x))
-      const avg = a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0
-      const p = d.filter((x) => x.result === 'Pass').length
-      const f = d.filter((x) => x.result === 'Fail').length
-      const ev = p + f
-      const passRate = ev ? (p / ev) * 100 : 0
-      const status = count === 0 ? '—' : passRate >= EXCELLENT_PASS_RATE ? STATUS_EXCELLENT : STATUS_REVIEW
-      return { id: cc.id, name: cc.name, count, avg, passRate, status }
-    })
-
-  const chartData = classSummaries.map((c) => ({
-    name: c.name,
-    avg: Math.round(c.avg * 10) / 10,
-    pass: Math.round(c.passRate * 10) / 10
-  }))
 
   const isEmpty = totalStudents === 0
 

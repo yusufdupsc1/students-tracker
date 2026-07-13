@@ -1,4 +1,3 @@
-import data from '../data/seed.json'
 import { db } from './schema'
 import type { School, GradingScaleRow, ClassConfig, Student } from '../types'
 
@@ -12,10 +11,12 @@ interface RealSeed {
 /**
  * Seed the database from the baked-in real spreadsheet data (generated at build
  * time by scripts/seed-from-xlsx.mjs from Result_Card_Bejkhonda_v3_3_FINAL.xlsx).
+ * The JSON is dynamically imported so it stays out of the initial bundle and is
+ * only fetched on first run when the DB is empty.
  * Caller is responsible for the "only when empty" guard.
  */
 export async function seedRealData(): Promise<boolean> {
-  const seed = data as unknown as RealSeed
+  const seed = (await import('../data/seed.json')).default as unknown as RealSeed
   if (!seed?.classes?.length) return false
   await db.transaction(
     'rw',

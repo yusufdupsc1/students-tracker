@@ -5,9 +5,13 @@ import App from './App'
 import './index.css'
 import './print.css'
 import { seedDatabase } from './db/seed'
+import { requestPersistentStorage } from './lib/persistence'
 
 // Seed the database on first load (only seeds when empty).
 void seedDatabase()
+
+// Best-effort: ask the browser to keep our IndexedDB under storage pressure.
+void requestPersistentStorage()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

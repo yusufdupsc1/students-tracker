@@ -88,34 +88,36 @@ function ReportCardView({
       </div>
 
       {/* Subject table */}
-      <table className="mt-3 w-full border-collapse text-sm">
-        <thead>
-          <tr className="bg-maroon text-white">
-            <th className="border border-maroon px-2 py-1 text-left">বিষয়</th>
-            <th className="border border-maroon px-2 py-1">পূর্ণ</th>
-            <th className="border border-maroon px-2 py-1">প্রাপ্ত</th>
-            <th className="border border-maroon px-2 py-1">%</th>
-            <th className="border border-maroon px-2 py-1">GPA</th>
-            <th className="border border-maroon px-2 py-1">গ্রেড</th>
-            <th className="border border-maroon px-2 py-1">স্ট্যাটাস</th>
-            <th className="border border-maroon px-2 py-1 text-left">মন্তব্য</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.name}>
-              <td className="border border-maroon px-2 py-1">{r.name}</td>
-              <td className="border border-maroon px-2 py-1 text-center">{r.full}</td>
-              <td className="border border-maroon px-2 py-1 text-center">{r.obtained}</td>
-              <td className="border border-maroon px-2 py-1 text-center">{r.pct}</td>
-              <td className="border border-maroon px-2 py-1 text-center">{r.gpa}</td>
-              <td className="border border-maroon px-2 py-1 text-center">{r.grade}</td>
-              <td className="border border-maroon px-2 py-1 text-center">{r.status}</td>
-              <td className="border border-maroon px-2 py-1">{r.remark}</td>
+      <div className="overflow-x-auto">
+        <table className="mt-3 w-full border-collapse text-sm leading-5 min-w-[640px]">
+          <thead>
+            <tr className="bg-maroon text-white">
+              <th className="border border-maroon px-2 py-1 text-left">বিষয়</th>
+              <th className="border border-maroon px-2 py-1">পূর্ণ</th>
+              <th className="border border-maroon px-2 py-1">প্রাপ্ত</th>
+              <th className="border border-maroon px-2 py-1">%</th>
+              <th className="border border-maroon px-2 py-1">GPA</th>
+              <th className="border border-maroon px-2 py-1">গ্রেড</th>
+              <th className="border border-maroon px-2 py-1">স্ট্যাটাস</th>
+              <th className="border border-maroon px-2 py-1 text-left">মন্তব্য</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.name}>
+                <td className="border border-maroon px-2 py-1">{r.name}</td>
+                <td className="border border-maroon px-2 py-1 text-center">{r.full}</td>
+                <td className="border border-maroon px-2 py-1 text-center">{r.obtained}</td>
+                <td className="border border-maroon px-2 py-1 text-center">{r.pct}</td>
+                <td className="border border-maroon px-2 py-1 text-center">{r.gpa}</td>
+                <td className="border border-maroon px-2 py-1 text-center">{r.grade}</td>
+                <td className="border border-maroon px-2 py-1 text-center">{r.status}</td>
+                <td className="border border-maroon px-2 py-1">{r.remark}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Summary */}
       <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm font-semibold">

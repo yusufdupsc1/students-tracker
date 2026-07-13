@@ -12,7 +12,6 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "seed": "node scripts/seed-from-xlsx.mjs",
     "test": "vitest run",
     "test:watch": "vitest"
   },

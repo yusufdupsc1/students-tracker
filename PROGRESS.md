@@ -15,7 +15,8 @@ No backend, no auth — all data in IndexedDB (Dexie). Bengali UI, mobile-first.
 - [x] 8. **Student Search** (cross-class search by name/roll/guardian/village; combined academic + MTR profile)
 - [x] 9. Unit tests for `src/lib/calculations.ts` (12 tests; trap #1 blank≠zero, Incomplete, threshold, merit ties)
 - [x] 10. **Import-from-xlsx** (`src/lib/importXlsx.ts` + `src/pages/Import.tsx`): real `Result_Card_Bejkhonda_v3_3_FINAL.xlsx` mapping → School/scale/classes/students, preview-before-commit, **Replace everything** semantics; plus JSON backup export/restore (`src/lib/backup.ts`)
-- [x] Perf: route-level code-splitting (React.lazy) — initial JS ~90 KB gzip; recharts & xlsx are on-demand chunks; PWA precache keeps nav instant offline
+- [x] Perf: route-level code-splitting (React.lazy) — initial JS ~93 KB gzip; recharts & xlsx are on-demand chunks; PWA precache keeps nav instant offline
+- [x] **Spreadsheet baked as the default DB**: `scripts/seed-from-xlsx.mjs` regenerates `src/data/seed.json` from the real `Result_Card_Bejkhonda_v3_3_FINAL.xlsx` (106 students / 5 classes) in the live model shape; `seedDatabase()` prefers it (fallback to defaults). Wired as `predev`/`prebuild` so the app always opens with the latest sheet, fully offline. Manual upload (item 10) still available for on-device refresh.
 - [ ] 11. Lighthouse PWA + offline verification
 - [ ] 12. Dead-code cleanup: remove remaining unwired JS prototype (`src/screens/`, `src/context/`, `src/db/db.js`, `src/lib/{calc,gradeScale,qr}.js`, `src/components/Layout.jsx`, `src/styles/*`); `src/lib/importXlsx.js` already removed
 

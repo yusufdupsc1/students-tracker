@@ -5,6 +5,9 @@
   "type": "module",
   "description": "Offline PWA for student result cards, MTR, and QR IDs (Bejkhonda school)",
   "scripts": {
+    "seed": "node scripts/seed-from-xlsx.mjs",
+    "predev": "node scripts/seed-from-xlsx.mjs",
+    "prebuild": "node scripts/seed-from-xlsx.mjs",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",

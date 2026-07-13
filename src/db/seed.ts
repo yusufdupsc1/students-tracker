@@ -1,4 +1,5 @@
 import { db } from './schema'
+import { seedRealData } from './seedReal'
 import type { School, GradingScaleRow, ClassConfig, SubjectSlot } from '../types'
 
 export const DEFAULT_GRADING_SCALE: GradingScaleRow[] = [
@@ -48,11 +49,18 @@ export const DEFAULT_SCHOOL: School = {
 
 /**
  * Seed the database only on first load (when it is empty).
- * Returns true if data was seeded, false if data already existed.
+ * Prefers the baked-in REAL spreadsheet data; falls back to defaults if it is
+ * missing. Returns true if data was seeded, false if data already existed.
  */
 export async function seedDatabase(): Promise<boolean> {
   const existing = await db.classes.count()
   if (existing > 0) return false
+
+  try {
+    if (await seedRealData()) return true
+  } catch {
+    // Fall through to defaults if the baked seed is unavailable.
+  }
 
   await db.transaction(
     'rw',

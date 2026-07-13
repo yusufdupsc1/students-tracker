@@ -14,11 +14,12 @@ No backend, no auth — all data in IndexedDB (Dexie). Bengali UI, mobile-first.
 - [x] 4. **Class Roster** (live results, 33% highlight, add/edit/delete, duplicate-roll guard, mobile cards)
 - [x] 8. **Student Search** (cross-class search by name/roll/guardian/village; combined academic + MTR profile)
 - [x] 9. Unit tests for `src/lib/calculations.ts` (12 tests; trap #1 blank≠zero, Incomplete, threshold, merit ties)
-- [ ] 10. Import-from-xlsx wiring (`importXlsx.js` exists but is dead/unwired)
+- [x] 10. **Import-from-xlsx** (`src/lib/importXlsx.ts` + `src/pages/Import.tsx`): real `Result_Card_Bejkhonda_v3_3_FINAL.xlsx` mapping → School/scale/classes/students, preview-before-commit, **Replace everything** semantics; plus JSON backup export/restore (`src/lib/backup.ts`)
+- [x] Perf: route-level code-splitting (React.lazy) — initial JS ~90 KB gzip; recharts & xlsx are on-demand chunks; PWA precache keeps nav instant offline
 - [ ] 11. Lighthouse PWA + offline verification
-- [ ] 12. Dead-code cleanup: remove unwired JS prototype (`src/screens/`, `src/context/`, `src/db/db.js`, `src/lib/{calc,gradeScale,importXlsx,qr}.js`, `src/components/Layout.jsx`, `src/styles/*`)
+- [ ] 12. Dead-code cleanup: remove remaining unwired JS prototype (`src/screens/`, `src/context/`, `src/db/db.js`, `src/lib/{calc,gradeScale,qr}.js`, `src/components/Layout.jsx`, `src/styles/*`); `src/lib/importXlsx.js` already removed
 
 ## Drift note
 Commit `9a7bbc2` claimed student-management features done, but `ClassRoster.tsx`
-and `StudentSearch.tsx` were placeholders. Item 4 (Class Roster) implemented
-2026-07-13; item 8 still pending.
+and `StudentSearch.tsx` were placeholders. Items 4 & 8 implemented 2026-07-13;
+spreadsheet import + backup + perf work 2026-07-13.

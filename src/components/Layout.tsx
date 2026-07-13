@@ -8,6 +8,7 @@ const NAV: NavItem[] = [
   { to: '/report-card', label: 'ফলাফল কার্ড' },
   { to: '/mtr', label: 'MTR ট্র্যাকিং' },
   { to: '/search', label: 'অনুসন্ধান' },
+  { to: '/import', label: 'ইমপোর্ট' },
   { to: '/settings', label: 'সেটিংস' }
 ]
 

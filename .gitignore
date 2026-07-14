@@ -63,6 +63,9 @@ tmp/
 logs/
 *.log
 
+# AI / tooling artifacts
+audit/
+
 # Package managers
 package-lock.json
 pnpm-lock.yaml

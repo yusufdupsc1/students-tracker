@@ -1,43 +1,80 @@
-node_modules
-dist
-dist-ssr
-*.local
-*.log
-.DS_Store
-.vite
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Playwright MCP scratch
-.playwright-mcp/
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+*.tsbuildinfo
 
-# AI / tooling artifacts (exclude runtime scratch, keep committed docs)
-audit/
-.playwright-mcp/
-
-# Kilo/AI session scratch (not the committed .kilocode rules docs)
-.kilo/plans/
-.kilo/scratch/
-.kilocode/scratch/
-.kilocode/sessions/
-
-# IDE
+# Development
+.vite/
+.vercel/
+.netlify/
 .idea/
 .vscode/
 *.swp
 *.swo
+*~
 
-# OS
-Thumbs.db
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 ehthumbs.db
+Thumbs.db
+Desktop.ini
 
-# Environment
+# Environment & secrets
 .env
 .env.local
 .env.*.local
-
-# Testing
-coverage/
-
-# Misc
+.envrc
 *.pem
 *.key
 *.cert
+*.p12
+*.pfx
+
+# Testing
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Tooling artifacts
+.audit/
+.playwright-mcp/
+.kilo/plans/
+.kilo/scratch/
+.kilocode/scratch/
+.kilocode/sessions/
+.cache/
+.temp/
+tmp/
+logs/
+*.log
+
+# Package managers
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Misc
+*.tgz
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.iso
+*.dmg
+*.exe
+*.msi

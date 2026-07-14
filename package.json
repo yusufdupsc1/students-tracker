@@ -1,6 +1,6 @@
 {
   "name": "students-tracker",
-  "private": true,
+  "private": false,
   "version": "1.0.0",
   "type": "module",
   "description": "Offline PWA for student result cards, MTR, and QR IDs (Bejkhonda school)",
@@ -38,5 +38,22 @@
     "vite": "^5.4.8",
     "vite-plugin-pwa": "^0.20.5",
     "vitest": "^2.1.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/neo/students-tracker.git"
+  },
+  "license": "MIT",
+  "keywords": [
+    "pwa",
+    "offline-first",
+    "education",
+    "school-management",
+    "bengali",
+    "react",
+    "typescript",
+    "vite",
+    "dexie",
+    "tailwindcss"
+  ]
 }

@@ -1,0 +1,44 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build outputs
+dist
+dist-ssr
+*.local
+
+# Development
+.vite
+.vercel
+
+# Testing
+coverage
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Misc
+audit/
+.kilo/
+.kilocode/
+.playwright-mcp/

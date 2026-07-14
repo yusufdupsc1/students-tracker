@@ -13,3 +13,27 @@ dist-ssr
 audit/
 .kilo/
 .kilocode/
+.playwright-mcp/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+ehthumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+coverage/
+
+# Misc
+*.pem
+*.key
+*.cert

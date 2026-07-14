@@ -32,8 +32,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
       - run: npm run build
+      - uses: microsoft/playwright-github-action@v1
+        with:
+          browser: chromium
+      - run: npm run preview &
       - run: npx playwright test
 
   lighthouse:
@@ -48,6 +51,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - run: npm run preview &
+      - run: npx wait-on http://localhost:4173
       - uses: treosh/lighthouse-ci-action@v12
         with:
           uploadArtifacts: true

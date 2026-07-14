@@ -17,7 +17,8 @@
     "verify": "npm run typecheck && npm run test && npm run build",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
-    "lhci": "lhci autorun"
+    "lhci": "lhci autorun",
+    "test:print": "playwright test tests/e2e/print-parity.spec.ts"
   },
   "dependencies": {
     "dexie": "^4.0.8",

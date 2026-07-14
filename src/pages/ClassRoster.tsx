@@ -190,7 +190,7 @@ function StudentFormModal({
           </div>
 
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-300 text-red-700 text-sm px-3 py-2">
+            <div className="rounded-lg bg-bd-red-50 border border-bd-red-300 text-bd-red-700 text-sm px-3 py-2">
               {error}
             </div>
           )}

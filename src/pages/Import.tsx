@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { importXlsxFile, applyImport, type ImportResult } from '../lib/importXlsx'
 import { downloadBackup, applyBackup } from '../lib/backup'
+import { encryptBackup, decryptBackup, type EncryptedBackup } from '../lib/encryptedBackup'
 import { db } from '../db/schema'
 import { captureSnapshot, restoreSnapshot } from '../db/snapshots'
 import { storageStatus } from '../lib/persistence'
@@ -19,6 +20,12 @@ export default function Import() {
   const [backupError, setBackupError] = useState('')
   const [backupBusy, setBackupBusy] = useState(false)
   const [backupDone, setBackupDone] = useState(false)
+
+  const [encPassword, setEncPassword] = useState('')
+  const [encFile, setEncFile] = useState<File | null>(null)
+  const [encError, setEncError] = useState('')
+  const [encBusy, setEncBusy] = useState(false)
+  const [encDone, setEncDone] = useState(false)
 
   const [storage, setStorage] = useState<{
     usage: number
@@ -112,6 +119,56 @@ export default function Import() {
       setBackupError('ব্যাকআপ ফাইল সঠিক নয় বা পড়া যায়নি।')
     } finally {
       setBackupBusy(false)
+    }
+  }
+
+  async function onEncryptedExport() {
+    if (!encPassword) {
+      setEncError('দয়া করে একটি পাসওয়ার্ড দিন।')
+      return
+    }
+    setEncBusy(true)
+    setEncError('')
+    try {
+      const text = await downloadBackup()
+      const encrypted = await encryptBackup(text, encPassword)
+      const blob = new Blob([JSON.stringify(encrypted)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `bejkhonda-backup-encrypted-${new Date().toISOString().slice(0, 10)}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+      setEncDone(true)
+      setEncPassword('')
+    } catch {
+      setEncError('এনক্রিপ্টেড ব্যাকআপ তৈরি করতে সমস্যা হয়েছে।')
+    } finally {
+      setEncBusy(false)
+    }
+  }
+
+  async function onEncryptedImport() {
+    if (!encFile) return
+    if (!encPassword) {
+      setEncError('দয়া করে ডিক্রিপ্ট পাসওয়ার্ড দিন।')
+      return
+    }
+    setEncBusy(true)
+    setEncError('')
+    try {
+      const text = await encFile.text()
+      const encrypted = JSON.parse(text) as EncryptedBackup
+      const decrypted = await decryptBackup(encrypted, encPassword)
+      await captureSnapshot('এনক্রিপ্টেড ব্যাকআপ পুনরুদ্ধারের পূর্বে')
+      await applyBackup(decrypted)
+      setEncDone(true)
+      setEncFile(null)
+      setEncPassword('')
+    } catch {
+      setEncError('এনক্রিপ্টেড ব্যাকআপ ফাইল সঠিক নয় বা পাসওয়ার্ড ভুল।')
+    } finally {
+      setEncBusy(false)
     }
   }
 
@@ -268,6 +325,74 @@ export default function Import() {
         {backupDone && (
           <div className="mt-3 rounded-xl bg-bd-green-50 border border-bd-green-300 text-bd-green-800 text-sm px-4 py-2.5 font-medium">
             ব্যাকআপ থেকে ডেটা পুনরুদ্ধার করা হয়েছে।
+          </div>
+        )}
+      </div>
+
+      {/* Encrypted backup */}
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">এনক্রিপ্টেড ব্যাকআপ (AES-256-GCM)</h2>
+        <p className="text-sm text-gray-500 mb-4 font-medium">
+          পাসওয়ার্ড দিয়ে এনক্রিপ্ট করা ব্যাকআপ এক্সপোর্ট বা ইমপোর্ট করুন।
+        </p>
+
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={onEncryptedExport}
+            disabled={encBusy}
+            className="btn-secondary"
+          >
+            {encBusy ? 'এনক্রিপ্ট হচ্ছে…' : 'এনক্রিপ্টেড এক্সপোর্ট'}
+          </button>
+
+          <label className="rounded-xl border border-bd-green-200 px-4 py-2.5 text-sm text-gray-700 cursor-pointer hover:bg-bd-green-50 transition-all duration-200 font-medium">
+            এনক্রিপ্টেড পুনরুদ্ধার
+            <input
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                if (f && !f.name.endsWith('.json')) {
+                  setEncError('দয়া করে একটি .json ফাইল নির্বাচন করুন।')
+                  setEncFile(null)
+                  return
+                }
+                setEncFile(f ?? null)
+                setEncDone(false)
+                setEncError('')
+              }}
+            />
+          </label>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <input
+            type="password"
+            value={encPassword}
+            onChange={(e) => setEncPassword(e.target.value)}
+            placeholder="পাসওয়ার্ড"
+            className="glass-input w-48"
+          />
+          {encFile && (
+            <button
+              onClick={onEncryptedImport}
+              disabled={encBusy}
+              className="btn-primary"
+            >
+              {encBusy ? 'ডিক্রিপ্ট হচ্ছে…' : 'ডিক্রিপ্ট ও পুনরুদ্ধার'}
+            </button>
+          )}
+        </div>
+
+        {encError && (
+          <div className="mt-3 rounded-xl bg-bd-red-50 border border-bd-red-300 text-bd-red-700 text-sm px-4 py-2.5">
+            {encError}
+          </div>
+        )}
+        {encDone && (
+          <div className="mt-3 rounded-xl bg-bd-green-50 border border-bd-green-300 text-bd-green-800 text-sm px-4 py-2.5 font-medium">
+            এনক্রিপ্টেড ব্যাকআপ সফলভাবে প্রসেস করা হয়েছে।
           </div>
         )}
       </div>

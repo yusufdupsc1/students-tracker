@@ -13,6 +13,7 @@ const MtrTracking = lazy(() => import('./pages/MtrTracking'))
 const StudentSearch = lazy(() => import('./pages/StudentSearch'))
 const Import = lazy(() => import('./pages/Import'))
 const Settings = lazy(() => import('./pages/Settings'))
+const QrIds = lazy(() => import('./pages/QrIds'))
 
 function lazyPage(node: React.ReactNode) {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route path="search" element={lazyPage(<StudentSearch />)} />
           <Route path="import" element={lazyPage(<Import />)} />
           <Route path="settings" element={lazyPage(<Settings />)} />
+          <Route path="qr-ids" element={lazyPage(<QrIds />)} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

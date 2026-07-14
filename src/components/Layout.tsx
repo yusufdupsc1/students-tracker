@@ -15,6 +15,7 @@ const PRIMARY_NAV: NavItem[] = [
 
 const SHEET_NAV: NavItem[] = [
   { to: '/mtr', label: 'Progress ট্র্যাকিং' },
+  { to: '/qr-ids', label: 'QR আইডি' },
   { to: '/import', label: 'ইমপোর্ট ও ব্যাকআপ' },
   { to: '/settings', label: 'সেটিংস' }
 ]

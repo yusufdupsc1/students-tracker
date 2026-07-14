@@ -35,4 +35,10 @@
   .official-print:last-child {
     page-break-after: auto;
   }
+
+  /* QR IDs print layout */
+  .glass-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }

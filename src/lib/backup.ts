@@ -30,9 +30,10 @@ export async function buildBackup(): Promise<Backup> {
   }
 }
 
-export async function downloadBackup(): Promise<void> {
+export async function downloadBackup(): Promise<string> {
   const data = await buildBackup()
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const json = JSON.stringify(data, null, 2)
+  const blob = new Blob([json], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -41,6 +42,7 @@ export async function downloadBackup(): Promise<void> {
   a.click()
   a.remove()
   URL.revokeObjectURL(url)
+  return json
 }
 
 /** Replace all app data with the contents of a JSON backup (atomic). */

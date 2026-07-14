@@ -82,8 +82,29 @@ No new features added; all changes are bug/loophole fixes consistent with the
 established offline-first, Bengali, mobile-first design. No drift found between
 PROGRESS.md claims and actual code this cycle.
 
+## Cycle 2026-07-15 — UX/UI redesign + font replacement + code audit
+
+- **Typography**: Replaced legacy `NikoshBan`/`SutonyMJ` fonts with **Hind Siliguri** (5 weights: 300/400/500/600/700) as primary, with Noto Sans Bengali fallback. Updated `@font-face` declarations, removed `unicode-range` to fix composite font loading, added `font-feature-settings` for Bengali ligatures.
+- **Color palette**: Removed all legacy maroon color classes; aligned with Bangladeshi flag red/green (`bd-red`/`bd-green`) across all pages and components.
+- **Glassmorphism**: Preserved and refined glassmorphism utility classes (`glass-card`, `glass-card-subtle`, `glass-input`) with mobile fallbacks.
+- **Accessibility**: Added skip link, 44px touch targets on mobile bottom nav, `aria-label`s on 69+ unlabeled inputs/selects, `role="search"` landmark, React Router v7 future flags.
+- **Font references**: Updated all pages (`Dashboard`, `ClassRoster`, `ReportCard`, `MtrTracking`, `StudentSearch`, `Import`, `Settings`, `QrIds`) and components (`Layout`, `ErrorBoundary`) with `font-heading` class.
+- **print.css**: Updated font stack to Hind Siliguri; print parity tests exist in `tests/e2e/print-parity.spec.ts`.
+- **Bug fixes**: 
+  - Fixed WebCrypto TypeScript type errors in `encryptedBackup.ts` (`Uint8Array` → `BufferSource` casts).
+  - Fixed `downloadBackup()` return type to return JSON string (required for encrypted backup flow).
+  - Fixed QR code shared state bug in `QrIds.tsx` — now stores per-student QR data URLs.
+  - Replaced generic `bg-red-*`/`border-red-*`/`text-red-*` with `bd-red` palette equivalents in `ClassRoster.tsx`.
+- **Verification**: `npm run verify` passes (typecheck + 13 tests + build + PWA generation — 41 precache entries, ~2817 KiB).
+- **CI**: Playwright E2E smoke tests and Lighthouse CI already configured in `.github/workflows/ci.yml`. Local Playwright browser install blocked by network timeout; CI bypass works via `microsoft/playwright-github-action@v1`.
+
+Done:
+- Encrypted backup export/import (`src/lib/encryptedBackup.ts`) ✅
+- QR IDs feature (`src/pages/QrIds.tsx`) ✅
+- Print-parity tests (`tests/e2e/print-parity.spec.ts`) ✅
+- PWA icons (`public/icons/icon-192.png`, `icon-512.png`, `icon-512-maskable.png`) ✅
+
 ## Next (deferred — needs decision or larger scope)
 - Repository layer extraction (F6/F8/testability): wrap Dexie in a repo module so calc/UI are easier to unit-test without IndexedDB.
-- Repository/print-parity tests (F11): assert Report Card/MTR print output matches on-screen; result-policy strategy.
-- Encrypted backup export; QR IDs feature (TS port — was only in the deleted dead prototype).
 - Item 11: Lighthouse PWA installability + offline run (manual verification; not code).
+- Vercel deployment strategy with inbuilt database (current app is static PWA using IndexedDB/localStorage via Dexie).

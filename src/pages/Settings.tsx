@@ -206,6 +206,7 @@ export default function Settings() {
                       onChange={(e) =>
                         updateScaleRow(r._uid, { minPercent: Number(e.target.value) })
                       }
+                      aria-label={`ন্যূনতম % (${r.grade || 'গ্রেড'})`}
                     />
                   </td>
                   <td className="py-2.5 pr-3">
@@ -215,6 +216,7 @@ export default function Settings() {
                       className="glass-input w-20"
                       value={r.gpa}
                       onChange={(e) => updateScaleRow(r._uid, { gpa: Number(e.target.value) })}
+                      aria-label={`GPA (${r.grade || 'গ্রেড'})`}
                     />
                   </td>
                   <td className="py-2.5 pr-3">
@@ -222,6 +224,7 @@ export default function Settings() {
                       className="glass-input w-20"
                       value={r.grade}
                       onChange={(e) => updateScaleRow(r._uid, { grade: e.target.value })}
+                      aria-label={`গ্রেড (ন্যূনতম ${r.minPercent}%)`}
                     />
                   </td>
                   <td className="py-2.5">
@@ -293,6 +296,7 @@ export default function Settings() {
                           className="glass-input w-full min-w-[160px]"
                           value={s.name}
                           onChange={(e) => updateSubject(cls.id, s.id, { name: e.target.value })}
+                          aria-label={`বিষয় (ক্লাস ${cls.name})`}
                         />
                       </td>
                       <td className="py-2.5 pr-3">
@@ -303,6 +307,7 @@ export default function Settings() {
                           onChange={(e) =>
                             updateSubject(cls.id, s.id, { fullMarks: Number(e.target.value) })
                           }
+                          aria-label={`পূর্ণমান (ক্লাস ${cls.name})`}
                         />
                       </td>
                       <td className="py-2.5">

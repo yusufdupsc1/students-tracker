@@ -46,6 +46,22 @@ export default function Import() {
     setError('')
     setDone(false)
     setFileName(file.name)
+
+    const maxXlsxSize = 10 * 1024 * 1024 // 10 MB
+    if (file.size > maxXlsxSize) {
+      setError('ফাইলটি অনেক বড় (১০ MB-এর বেশি)। একটি ছোট ফাইল নির্বাচন করুন।')
+      setResult(null)
+      return
+    }
+    const isXlsx = file.name.endsWith('.xlsx') || file.name.endsWith('.xls') ||
+      file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      file.type === 'application/vnd.ms-excel'
+    if (!isXlsx) {
+      setError('দয়া করে একটি বৈধ .xlsx বা .xls ফাইল নির্বাচন করুন।')
+      setResult(null)
+      return
+    }
+
     try {
       const parsed = await importXlsxFile(file)
       if (parsed.students.length === 0) {
@@ -56,7 +72,7 @@ export default function Import() {
       setResult(parsed)
     } catch (e) {
       setResult(null)
-      setError('ফাইল পড়া যায়নি। সঠিক .xlsx ফাইল নির্বাচন করুন।')
+      setError('ফাইল পড়া যায়নি বা শিটের বিন্যাস সঠিক নয়। সঠিক .xlsx ফাইল নির্বাচন করুন।')
     }
   }
 
@@ -210,10 +226,20 @@ export default function Import() {
             ব্যাকআপ থেকে পুনরুদ্ধার
             <input
               type="file"
-              accept=".json"
+              accept=".json,application/json"
               className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0]
+                if (f && !f.name.endsWith('.json')) {
+                  setBackupError('দয়া করে একটি .json ব্যাকআপ ফাইল নির্বাচন করুন।')
+                  setBackupFile(null)
+                  return
+                }
+                if (f && f.size > 50 * 1024 * 1024) {
+                  setBackupError('ব্যাকআপ ফাইলটি অনেক বড় (৫০ MB-এর বেশি)।')
+                  setBackupFile(null)
+                  return
+                }
                 setBackupFile(f ?? null)
                 setBackupDone(false)
                 setBackupError('')

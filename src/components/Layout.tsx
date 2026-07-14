@@ -51,7 +51,7 @@ export default function Layout() {
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-heading font-black tracking-wide text-white leading-tight">
+              <h1 className="text-xl font-heading font-bold tracking-wide text-white leading-tight">
                 বেজখণ্ড
               </h1>
               <p className="text-[11px] font-medium text-bd-green-200/90 tracking-wide uppercase">
@@ -74,6 +74,18 @@ export default function Layout() {
               {item.label}
             </NavLink>
           ))}
+          <div className="my-2 border-t border-white/10" />
+          {SHEET_NAV.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `px-4 py-3 rounded-xl text-sm transition-all duration-200 ${linkClass({ isActive })}`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
         </nav>
         <div className="relative px-6 py-4 text-xs text-bd-green-200/60 border-t border-white/10">
           Offline PWA · সব ডেটা লোকাল
@@ -85,7 +97,10 @@ export default function Layout() {
         <header className="app-topbar md:hidden sticky top-0 z-10 bg-gradient-to-r from-bd-green-800 to-bd-green-700 text-white px-4 py-3 text-lg font-heading font-bold shadow-soft">
           বেজখণ্ড প্রাঃ বিদ্যালয়
         </header>
-        <main className="app-main flex-1 p-4 pb-24 md:pb-8 md:p-8 max-w-5xl w-full mx-auto">
+        <a href="#app-main" className="skip-link sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-bd-green-700 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
+          মূল কনটেন্টে যান
+        </a>
+        <main id="app-main" className="app-main flex-1 p-4 pb-24 md:pb-8 md:p-8 max-w-5xl w-full mx-auto">
           <Outlet />
         </main>
       </div>
@@ -98,7 +113,7 @@ export default function Layout() {
               <button
                 key={item.to}
                 onClick={() => setSheetOpen(true)}
-                className={`flex-1 text-center px-1 py-2.5 text-[11px] transition-all duration-200 ${mobileLinkClass({ isActive: sheetOpen })}`}
+                className={`flex-1 text-center px-1 py-2.5 text-[11px] min-h-[44px] flex items-center justify-center transition-all duration-200 ${mobileLinkClass({ isActive: sheetOpen })}`}
               >
                 {item.label}
               </button>
@@ -110,7 +125,7 @@ export default function Layout() {
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `flex-1 text-center px-1 py-2.5 text-[11px] transition-all duration-200 ${mobileLinkClass({ isActive })}`
+                `flex-1 text-center px-1 py-2.5 text-[11px] min-h-[44px] flex items-center justify-center transition-all duration-200 ${mobileLinkClass({ isActive })}`
               }
             >
               {item.label}

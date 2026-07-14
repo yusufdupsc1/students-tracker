@@ -218,6 +218,7 @@ export default function ReportCard() {
               className="glass-input"
               value={selected?.id ?? ''}
               onChange={(e) => setStudentId(e.target.value)}
+              aria-label="শিক্ষার্থী বাছুন"
             >
               {sorted.map((s) => (
                 <option key={s.id} value={s.id}>

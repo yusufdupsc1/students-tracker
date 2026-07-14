@@ -1,5 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useState } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { db } from '../db/schema'
 
 type NavItem = { to: string; label: string; end?: boolean }
 
@@ -31,6 +33,7 @@ function mobileLinkClass({ isActive }: { isActive: boolean }) {
 
 export default function Layout() {
   const [sheetOpen, setSheetOpen] = useState(false)
+  const school = useLiveQuery(() => db.school.get('school'))
 
   return (
     <div className="min-h-full flex flex-col md:flex-row bg-gradient-to-br from-bd-green-50 via-white to-bd-green-50/50 text-gray-900 font-body">
@@ -52,7 +55,7 @@ export default function Layout() {
             </div>
             <div>
               <h1 className="text-xl font-heading font-bold tracking-wide text-white leading-tight">
-                বেজখণ্ড সঃ প্রাঃ বিদ্যালয়
+                {school?.name || 'বেজখণ্ড সঃ প্রাঃ বিদ্যালয়'}
               </h1>
             </div>
           </div>
@@ -92,7 +95,7 @@ export default function Layout() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="app-topbar md:hidden sticky top-0 z-10 bg-gradient-to-r from-bd-green-800 to-bd-green-700 text-white px-4 py-3 text-lg font-heading font-bold shadow-soft">
-          বেজখণ্ড সঃ প্রাঃ বিদ্যালয়
+          {school?.name || 'বেজখণ্ড সঃ প্রাঃ বিদ্যালয়'}
         </header>
         <a href="#app-main" className="skip-link sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-bd-green-700 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
           মূল কনটেন্টে যান

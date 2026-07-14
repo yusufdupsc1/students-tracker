@@ -9,11 +9,15 @@ dist-ssr
 # Playwright MCP scratch
 .playwright-mcp/
 
-# AI / tooling artifacts
+# AI / tooling artifacts (exclude runtime scratch, keep committed docs)
 audit/
-.kilo/
-.kilocode/
 .playwright-mcp/
+
+# Kilo/AI session scratch (not the committed .kilocode rules docs)
+.kilo/plans/
+.kilo/scratch/
+.kilocode/scratch/
+.kilocode/sessions/
 
 # IDE
 .idea/

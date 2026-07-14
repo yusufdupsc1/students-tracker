@@ -124,10 +124,11 @@ export default function StudentSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="নাম, রোল, অভিভাবক বা গ্রাম লিখুন…"
-          className={`glass-input ${query ? 'pr-10' : ''} pl-12 overflow-hidden`}
+          className="search-input overflow-hidden"
+          style={{ paddingLeft: '3.5rem', paddingRight: '2.5rem' }}
           aria-label="শিক্ষার্থী অনুসন্ধান"
         />
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none flex items-center justify-center w-5 h-5">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>

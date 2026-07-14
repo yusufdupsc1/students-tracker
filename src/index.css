@@ -139,6 +139,10 @@ textarea {
            focus:border-bd-green-500 focus:bg-white focus:shadow-md focus:shadow-bd-green-900/5
            focus:outline-none;
   }
+
+  .search-input {
+    @apply glass-input pl-14 pr-10;
+  }
 }
 
 /* ==========================================================================

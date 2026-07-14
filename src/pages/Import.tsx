@@ -1,6 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { importXlsxFile, applyImport, type ImportResult } from '../lib/importXlsx'
 import { downloadBackup, applyBackup } from '../lib/backup'
+import { db } from '../db/schema'
+import { captureSnapshot, restoreSnapshot } from '../db/snapshots'
+import { storageStatus } from '../lib/persistence'
 
 const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
 
@@ -15,6 +19,22 @@ export default function Import() {
   const [backupError, setBackupError] = useState('')
   const [backupBusy, setBackupBusy] = useState(false)
   const [backupDone, setBackupDone] = useState(false)
+
+  const [storage, setStorage] = useState<{
+    usage: number
+    quota: number
+    persisted: boolean
+  } | null>(null)
+
+  const snapshots = useLiveQuery(
+    () => db.snapshots.orderBy('createdAt').reverse().toArray(),
+    [],
+    [] as { id?: number; createdAt: string; reason: string }[]
+  )
+
+  useEffect(() => {
+    void storageStatus().then(setStorage)
+  }, [])
 
   const classCounts = useMemo(() => {
     const m: Record<number, number> = {}
@@ -47,6 +67,7 @@ export default function Import() {
     }
     setBusy(true)
     try {
+      await captureSnapshot('স্প্রেডশিট ইমপোর্টের পূর্বে')
       await applyImport(result)
       setDone(true)
       setResult(null)
@@ -67,6 +88,7 @@ export default function Import() {
     setBackupError('')
     try {
       const text = await backupFile.text()
+      await captureSnapshot('ব্যাকআপ পুনরুদ্ধারের পূর্বে')
       await applyBackup(text)
       setBackupDone(true)
       setBackupFile(null)
@@ -221,6 +243,79 @@ export default function Import() {
           <div className="mt-2 rounded-lg bg-green-50 border border-green-300 text-green-800 text-sm px-3 py-2">
             ব্যাকআপ থেকে ডেটা পুনরুদ্ধার করা হয়েছে।
           </div>
+        )}
+      </div>
+
+      {/* Storage durability status */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <h2 className="text-lg font-semibold mb-1">স্টোরেজ অবস্থা</h2>
+        {storage === null ? (
+          <p className="text-sm text-gray-500">স্টোরেজ তথ্য উপলব্ধ নয়।</p>
+        ) : (
+          <div className="text-sm space-y-1">
+            <div>
+              স্থায়ী স্টোরেজ:{' '}
+              {storage.persisted ? (
+                <span className="text-green-700 font-semibold">হ্যাঁ ✓</span>
+              ) : (
+                <span className="text-amber-700 font-semibold">না</span>
+              )}
+            </div>
+            {!storage.persisted && (
+              <p className="text-xs text-amber-700">
+                স্টোরেজ চাপের সময় ব্রাউজার ডেটা মুছে ফেলতে পারে। প্রয়োজনে ব্যাকআপ
+                এক্সপোর্ট করে রাখুন।
+              </p>
+            )}
+            {storage.quota > 0 && (
+              <div className="text-gray-500">
+                ব্যবহৃত: {(storage.usage / 1048576).toFixed(2)} MB / মোট{' '}
+                {(storage.quota / 1048576).toFixed(0)} MB
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Auto-snapshots (undo for destructive imports/restores) */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <h2 className="text-lg font-semibold mb-1">সাম্প্রতিক স্ন্যাপশট</h2>
+        <p className="text-sm text-gray-500 mb-3">
+          ইমপোর্ট বা ব্যাকআপ পুনরুদ্ধারের আগে স্বয়ংক্রিয়ভাবে স্ন্যাপশট নেওয়া হয়।
+          প্রয়োজনে পূর্বাবস্থায় ফিরে যেতে পারবেন।
+        </p>
+
+        {snapshots.length === 0 ? (
+          <p className="text-sm text-gray-400">কোনো স্ন্যাপশট নেই।</p>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {snapshots.map((s) => (
+              <li key={s.id} className="py-2 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-medium">{s.reason}</div>
+                  <div className="text-xs text-gray-400">
+                    {new Date(s.createdAt).toLocaleString('bn-BD')}
+                  </div>
+                </div>
+                <button
+                  onClick={async () => {
+                    if (
+                      window.confirm('এই স্ন্যাপশট থেকে ডেটা পুনরুদ্ধার করা হবে। চালিয়ে যাবেন?')
+                    ) {
+                      try {
+                        await restoreSnapshot(s.id!)
+                      } catch {
+                        /* ignore */
+                      }
+                    }
+                  }}
+                  className="shrink-0 rounded-lg border border-maroon text-maroon px-3 py-1.5 text-sm font-semibold"
+                >
+                  পুনরুদ্ধার
+                </button>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </section>

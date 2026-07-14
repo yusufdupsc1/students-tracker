@@ -1,0 +1,79 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+out/
+*.tsbuildinfo
+
+# Development
+.vite/
+.vercel/
+.netlify/
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+.envrc
+*.pem
+*.key
+*.cert
+*.p12
+*.pfx
+
+# Testing
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# Tooling artifacts
+.audit/
+.playwright-mcp/
+.kilo/plans/
+.kilo/scratch/
+.kilocode/scratch/
+.kilocode/sessions/
+
+# Docker / containers
+.dockerignore
+
+# Package manager locks (keep only package-lock.json)
+# pnpm-lock.yaml
+# yarn.lock
+
+# Misc archives
+*.tgz
+*.tar.gz
+*.zip
+*.rar
+*.7z
+*.iso
+*.dmg
+*.exe
+*.msi

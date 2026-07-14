@@ -1,12 +1,20 @@
 import Dexie, { type Table } from 'dexie'
 import type { School, GradingScaleRow, ClassConfig, Student, MTRRecord } from '../types'
 
+export interface Snapshot {
+  id?: number
+  createdAt: string // ISO timestamp
+  reason: string // Bengali label shown in UI
+  json: string // serialized Backup
+}
+
 export class AppDB extends Dexie {
   school!: Table<School, string>
   gradingScale!: Table<GradingScaleRow, number>
   classes!: Table<ClassConfig, number>
   students!: Table<Student, string>
   mtrRecords!: Table<MTRRecord, string>
+  snapshots!: Table<Snapshot, number>
 
   constructor() {
     super('bejkhonda-school')
@@ -21,6 +29,16 @@ export class AppDB extends Dexie {
       students: 'id, classId, roll, &[classId+roll]',
       // One competency record per student.
       mtrRecords: 'id, classId, studentId'
+    })
+    // Additive migration pattern: never mutate a shipped version(1) block.
+    // Bump the version and add the new store alongside the existing ones.
+    this.version(2).stores({
+      school: 'id',
+      gradingScale: 'minPercent',
+      classes: 'id',
+      students: 'id, classId, roll, &[classId+roll]',
+      mtrRecords: 'id, classId, studentId',
+      snapshots: '++id, createdAt'
     })
   }
 }

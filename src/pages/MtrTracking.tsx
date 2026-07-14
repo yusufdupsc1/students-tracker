@@ -175,7 +175,7 @@ export default function MTRTracking() {
 
   return (
     <div>
-      <h1 className="text-3xl font-heading font-bold text-bd-green-900 mb-4 tracking-tight">MTR ট্র্যাকিং</h1>
+      <h1 className="text-3xl font-heading font-bold text-bd-green-900 mb-4 tracking-tight">Progress ট্র্যাকিং</h1>
 
       {/* Tabs */}
       <div className="no-print mt-3 flex flex-wrap gap-2">

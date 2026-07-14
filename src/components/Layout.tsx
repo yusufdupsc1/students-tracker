@@ -12,7 +12,7 @@ const PRIMARY_NAV: NavItem[] = [
 ]
 
 const SHEET_NAV: NavItem[] = [
-  { to: '/mtr', label: 'MTR ট্র্যাকিং' },
+  { to: '/mtr', label: 'Progress ট্র্যাকিং' },
   { to: '/import', label: 'ইমপোর্ট ও ব্যাকআপ' },
   { to: '/settings', label: 'সেটিংস' }
 ]
@@ -52,11 +52,8 @@ export default function Layout() {
             </div>
             <div>
               <h1 className="text-xl font-heading font-bold tracking-wide text-white leading-tight">
-                বেজখণ্ড
+                বেজখণ্ড সঃ প্রাঃ বিদ্যালয়
               </h1>
-              <p className="text-[11px] font-medium text-bd-green-200/90 tracking-wide uppercase">
-                প্রাঃ বিদ্যালয়
-              </p>
             </div>
           </div>
         </div>
@@ -95,7 +92,7 @@ export default function Layout() {
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="app-topbar md:hidden sticky top-0 z-10 bg-gradient-to-r from-bd-green-800 to-bd-green-700 text-white px-4 py-3 text-lg font-heading font-bold shadow-soft">
-          বেজখণ্ড প্রাঃ বিদ্যালয়
+          বেজখণ্ড সঃ প্রাঃ বিদ্যালয়
         </header>
         <a href="#app-main" className="skip-link sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-bd-green-700 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
           মূল কনটেন্টে যান

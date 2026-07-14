@@ -118,13 +118,13 @@ export default function StudentSearch() {
     <section>
       <h1 className="text-3xl font-heading font-bold text-bd-green-900 mb-5 tracking-tight">অনুসন্ধান</h1>
 
-      <div role="search" className="relative">
+      <div role="search" className="relative overflow-hidden">
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="নাম, রোল, অভিভাবক বা গ্রাম লিখুন…"
-          className={`glass-input ${query ? 'pr-10' : ''} pl-12`}
+          className={`glass-input ${query ? 'pr-10' : ''} pl-12 overflow-hidden`}
           aria-label="শিক্ষার্থী অনুসন্ধান"
         />
         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
@@ -136,7 +136,7 @@ export default function StudentSearch() {
           <button
             type="button"
             onClick={() => setQuery('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-bd-green-700 transition-colors duration-200 p-1"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-bd-green-700 transition-colors duration-200 p-1 z-10"
             aria-label="সন্ধান মুছে ফেলুন"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

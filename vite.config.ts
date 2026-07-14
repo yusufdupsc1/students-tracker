@@ -45,8 +45,6 @@ export default defineConfig({
           if (id.includes('xlsx') || id.includes('codepage')) return 'xlsx'
           if (id.includes('qrcode')) return 'qrcode'
           if (id.includes('dexie')) return 'dexie'
-          if (id.includes('react-router')) return 'react-vendor'
-          if (id.includes('react-dom') || id.includes('/react/')) return 'react-vendor'
           return 'vendor'
         }
       }

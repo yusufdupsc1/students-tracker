@@ -45,7 +45,22 @@ export async function downloadBackup(): Promise<void> {
 
 /** Replace all app data with the contents of a JSON backup (atomic). */
 export async function applyBackup(json: string): Promise<void> {
-  const data = JSON.parse(json) as Backup
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(json)
+  } catch {
+    throw new Error('ব্যাকআপ ফাইল সঠিক JSON নয়')
+  }
+  const data = parsed as Backup
+  if (
+    !data ||
+    typeof data !== 'object' ||
+    !Array.isArray(data.gradingScale) ||
+    !Array.isArray(data.classes) ||
+    !Array.isArray(data.students)
+  ) {
+    throw new Error('ব্যাকআপ ফাইলের গঠন সঠিক নয়')
+  }
   await db.transaction(
     'rw',
     db.school,

@@ -45,7 +45,3 @@ export class AppDB extends Dexie {
 
 export const db = new AppDB()
 
-/** Subjects that are actually active for a class (fullMarks > 0). */
-export function getActiveSubjects(classConfig: ClassConfig) {
-  return classConfig.subjects.filter((s) => s.fullMarks > 0)
-}

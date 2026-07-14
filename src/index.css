@@ -2,7 +2,96 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Noto Sans Bengali — self-hosted, works offline (no CDN). */
+/* ==========================================================================
+   Hind Siliguri — Primary Bengali + Latin font (self-hosted, offline-first)
+   Optimized: split Bengali/Latin unicode ranges, 5 weights, font-display swap
+   ========================================================================== */
+
+/* Bengali subset */
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-Light.ttf') format('truetype');
+  unicode-range: U+0980-09FE, U+200C-200D, U+20B9;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-Regular.ttf') format('truetype');
+  unicode-range: U+0980-09FE, U+200C-200D, U+20B9;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-Medium.ttf') format('truetype');
+  unicode-range: U+0980-09FE, U+200C-200D, U+20B9;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-SemiBold.ttf') format('truetype');
+  unicode-range: U+0980-09FE, U+200C-200D, U+20B9;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-Bold.ttf') format('truetype');
+  unicode-range: U+0980-09FE, U+200C-200D, U+20B9;
+}
+
+/* Latin subset */
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-Light.ttf') format('truetype');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-Regular.ttf') format('truetype');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-Medium.ttf') format('truetype');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-SemiBold.ttf') format('truetype');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Hind Siliguri';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./assets/fonts/HindSiliguri-Bold.ttf') format('truetype');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Noto Sans Bengali — fallback only (self-hosted, works offline). */
 @font-face {
   font-family: 'Noto Sans Bengali';
   font-style: normal;
@@ -28,13 +117,225 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* ==========================================================================
+   Base & Accessibility
+   ========================================================================== */
+
 :focus-visible {
-  outline: 2px solid #811b22;
+  outline: 2px solid theme('colors.bd-green.600');
   outline-offset: 2px;
+  border-radius: 0.375rem;
 }
 
 html,
 body,
 #root {
   height: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent iOS zoom on input focus (16px minimum) */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* ==========================================================================
+   Custom Scrollbar
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: theme('colors.bd-green.50');
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb {
+  background: theme('colors.bd-green.300');
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.bd-green.400');
+}
+
+/* ==========================================================================
+   Glassmorphism — Desktop only (disabled on mobile for performance)
+   ========================================================================== */
+
+@media (min-width: 768px) {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-sm border border-white/60 shadow-lg shadow-bd-green-900/5 rounded-2xl;
+  }
+
+  .glass-card-subtle {
+    @apply bg-white/60 backdrop-blur-sm border border-bd-green-100 shadow-sm rounded-2xl;
+  }
+
+  .glass-input {
+    @apply w-full rounded-xl border border-bd-green-200 bg-white/70 px-3.5 py-2.5 text-sm
+           placeholder:text-gray-400 transition-all duration-200
+           focus:border-bd-green-500 focus:bg-white focus:shadow-md focus:shadow-bd-green-900/5
+           focus:outline-none;
+  }
+}
+
+/* ==========================================================================
+   Solid Cards — Mobile (opaque for performance)
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .glass-card {
+    @apply bg-white border border-bd-green-100 shadow-sm rounded-2xl;
+  }
+
+  .glass-card-subtle {
+    @apply bg-white border border-bd-green-100 shadow-sm rounded-2xl;
+  }
+
+  .glass-input {
+    @apply w-full rounded-xl border border-bd-green-200 bg-white px-3.5 py-2.5 text-sm
+           placeholder:text-gray-400 transition-all duration-200
+           focus:border-bd-green-500 focus:shadow-md focus:shadow-bd-green-900/5
+           focus:outline-none;
+  }
+}
+
+/* ==========================================================================
+   Premium Button System
+   ========================================================================== */
+
+/* Primary Button — Gradient, elevated, tactile */
+.btn-primary {
+  @apply inline-flex items-center justify-center rounded-xl
+         bg-gradient-to-r from-bd-green-700 to-bd-green-600
+         px-5 py-2.5 text-sm font-semibold text-white
+         border border-bd-green-600/30
+         shadow-md shadow-bd-green-900/10
+         transition-all duration-200 ease-out
+         active:scale-[0.97];
+  transform: translateY(0);
+  will-change: transform, box-shadow;
+}
+.btn-primary:hover {
+  @apply shadow-lg shadow-bd-green-900/15 from-bd-green-800 to-bd-green-700;
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  @apply shadow-md shadow-bd-green-900/10 from-bd-green-700 to-bd-green-600;
+  transform: translateY(0) scale(0.97);
+  transition-duration: 100ms;
+}
+.btn-primary:disabled {
+  @apply opacity-50 cursor-not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary Button — Outlined, refined */
+.btn-secondary {
+  @apply inline-flex items-center justify-center rounded-xl
+         border border-bd-red-700 px-5 py-2.5 text-sm font-semibold text-bd-red-700
+         bg-transparent
+         transition-all duration-200 ease-out
+         active:scale-[0.97];
+  will-change: transform, box-shadow;
+}
+.btn-secondary:hover {
+  @apply bg-bd-red-50 shadow-md shadow-bd-red-900/10 border-bd-red-800;
+  transform: translateY(-1px);
+}
+.btn-secondary:active {
+  @apply bg-bd-red-100 border-bd-red-700;
+  transform: translateY(0) scale(0.97);
+  transition-duration: 100ms;
+}
+.btn-secondary:disabled {
+  @apply opacity-50 cursor-not-allowed;
+  transform: none;
+}
+
+/* Ghost Button — Minimal, text-only */
+.btn-ghost {
+  @apply inline-flex items-center justify-center rounded-xl
+         px-4 py-2 text-sm font-medium text-gray-600
+         bg-transparent border border-transparent
+         transition-all duration-200 ease-out
+         active:scale-[0.97];
+  will-change: transform, background-color;
+}
+.btn-ghost:hover {
+  @apply bg-bd-green-50 text-bd-green-800;
+  transform: translateY(-1px);
+}
+.btn-ghost:active {
+  @apply bg-bd-green-100 text-bd-green-900;
+  transform: translateY(0) scale(0.97);
+  transition-duration: 100ms;
+}
+
+/* Tab Pills */
+.tab-active {
+  @apply bg-gradient-to-r from-bd-green-700 to-bd-green-600 text-white
+         shadow-md shadow-bd-green-900/10 border-transparent
+         transition-all duration-200 ease-out;
+}
+.tab-active:hover {
+  @apply shadow-lg shadow-bd-green-900/15 from-bd-green-800 to-bd-green-700;
+}
+
+.tab-inactive {
+  @apply bg-white/70 border-bd-green-200 text-gray-600
+         hover:bg-bd-green-50 hover:text-bd-green-800 hover:border-bd-green-300
+         transition-all duration-200 ease-out;
+}
+.tab-inactive:active {
+  @apply scale-[0.97];
+  transition-duration: 100ms;
+}
+
+/* ==========================================================================
+   Scroll padding for mobile bottom nav
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  .app-main {
+    scroll-padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ==========================================================================
+   Reduced motion preference
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

@@ -20,9 +20,9 @@ const SKILLS: { key: SkillKey; label: string }[] = [
 ]
 
 const RESULT_STYLE: Record<'Pass' | 'Fail' | 'Incomplete', string> = {
-  Pass: 'bg-green-100 text-green-800 border-green-300',
-  Fail: 'bg-red-100 text-red-800 border-red-300',
-  Incomplete: 'bg-amber-100 text-amber-800 border-amber-300'
+  Pass: 'bg-bd-green-100 text-bd-green-800 border-bd-green-300',
+  Fail: 'bg-bd-red-100 text-bd-red-800 border-bd-red-300',
+  Incomplete: 'bg-gold/15 text-yellow-800 border-gold/30'
 }
 const RESULT_LABEL: Record<'Pass' | 'Fail' | 'Incomplete', string> = {
   Pass: 'উত্তীর্ণ',
@@ -44,13 +44,13 @@ function defaultRecord(s: Student): MTRRecord {
 
 function skillPill(v: MTRSkillStatus) {
   const map = {
-    yes: { t: 'হ্যাঁ', c: 'bg-green-600 text-white' },
-    no: { t: 'না', c: 'bg-red-600 text-white' },
-    unassessed: { t: '—', c: 'bg-gray-300 text-gray-700' }
+    yes: { t: 'হ্যাঁ', c: 'bg-bd-green-600 text-white' },
+    no: { t: 'না', c: 'bg-bd-red-600 text-white' },
+    unassessed: { t: '—', c: 'bg-gray-100 text-gray-600 border border-gray-200' }
   }
   const { t, c } = map[v]
   return (
-    <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${c}`}>{t}</span>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${c}`}>{t}</span>
   )
 }
 
@@ -116,26 +116,33 @@ export default function StudentSearch() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold text-maroon mb-4">অনুসন্ধান</h1>
+      <h1 className="text-3xl font-heading font-bold text-bd-green-900 mb-5 tracking-tight">অনুসন্ধান</h1>
 
-      <input
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="নাম, রোল, অভিভাবক বা গ্রাম লিখুন…"
-        className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-base"
-      />
+      <div className="relative">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="নাম, রোল, অভিভাবক বা গ্রাম লিখুন…"
+          className="glass-input pl-12"
+        />
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+      </div>
 
       {students.length === 0 ? (
-        <div className="mt-6 bg-white rounded-xl border border-dashed border-gray-300 p-8 text-center text-gray-500">
+        <div className="mt-6 glass-card-subtle p-8 text-center text-gray-500 border-dashed">
           এখনও কোনো শিক্ষার্থী যোগ করা হয়নি। ক্লাস তালিকা থেকে শিক্ষার্থী যোগ করুন।
         </div>
       ) : sortedMatches.length === 0 ? (
-        <div className="mt-6 bg-white rounded-xl border border-dashed border-gray-300 p-8 text-center text-gray-500">
+        <div className="mt-6 glass-card-subtle p-8 text-center text-gray-500 border-dashed">
           “{query}” এর সাথে মিলে যাওয়া কোনো শিক্ষার্থী পাওয়া যায়নি।
         </div>
       ) : (
-        <p className="mt-3 text-sm text-gray-500">{sortedMatches.length} জন শিক্ষার্থী পাওয়া গেছে</p>
+        <p className="mt-4 text-sm text-gray-500 font-medium">{sortedMatches.length} জন শিক্ষার্থী পাওয়া গেছে</p>
       )}
 
       <div className="mt-4 space-y-3">
@@ -150,39 +157,39 @@ export default function StudentSearch() {
           const rec = mtrMap.get(s.id) ?? defaultRecord(s)
 
           return (
-            <div key={s.id} className="bg-white rounded-xl border border-gray-200 p-4">
+            <div key={s.id} className="glass-card p-5 hover:shadow-soft-lg transition-all duration-200">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="font-semibold text-base">
+                  <div className="font-heading font-semibold text-base text-bd-green-900">
                     {s.name}
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-xs text-gray-500 mt-1 font-medium">
                     রোল {s.roll} · {CLASS_NAMES[s.classId]}
                     {s.guardian ? ` · অভিভাবক: ${s.guardian}` : ''}
                     {s.village ? ` · ${s.village}` : ''}
                   </div>
                 </div>
                 <span
-                  className={`shrink-0 inline-block px-2 py-0.5 rounded-full text-xs font-semibold border ${RESULT_STYLE[result]}`}
+                  className={`shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${RESULT_STYLE[result]}`}
                 >
                   {RESULT_LABEL[result]}
                 </span>
               </div>
 
-              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-medium">
-                <span>মোট: <span className="text-maroon">{total}</span></span>
-                <span>গড়: <span className="text-maroon">{avg.toFixed(2)}%</span></span>
-                <span>GPA: <span className="text-maroon">{gpa.toFixed(2)}</span></span>
-                <span>গ্রেড: <span className="text-maroon">{grade}</span></span>
-                <span>মেধা: <span className="text-maroon">{rank ?? '—'}</span></span>
+              <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-sm font-medium">
+                <span>মোট: <span className="text-bd-green-700">{total}</span></span>
+                <span>গড়: <span className="text-bd-green-700">{avg.toFixed(2)}%</span></span>
+                <span>GPA: <span className="text-bd-green-700">{gpa.toFixed(2)}</span></span>
+                <span>গ্রেড: <span className="text-bd-green-700">{grade}</span></span>
+                <span>মেধা: <span className="text-bd-green-700">{rank ?? '—'}</span></span>
               </div>
 
-              <div className="mt-3 border-t border-gray-100 pt-3">
-                <div className="text-xs font-medium text-gray-500 mb-1.5">MTR দক্ষতা</div>
-                <div className="space-y-1">
+              <div className="mt-3 border-t border-bd-green-100 pt-3">
+                <div className="text-xs font-semibold text-gray-500 mb-2">MTR দক্ষতা</div>
+                <div className="space-y-1.5">
                   {SKILLS.map((sk) => (
                     <div key={sk.key} className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">{sk.label}</span>
+                      <span className="text-gray-600 font-medium">{sk.label}</span>
                       {skillPill(rec[sk.key])}
                     </div>
                   ))}

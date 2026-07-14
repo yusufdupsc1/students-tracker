@@ -16,6 +16,7 @@
   }
   body {
     background: #ffffff !important;
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', system-ui, sans-serif !important;
   }
   @page {
     size: A4;
@@ -26,6 +27,12 @@
     page-break-after: always;
   }
   .report-card:last-child {
+    page-break-after: auto;
+  }
+  .official-print {
+    page-break-after: always;
+  }
+  .official-print:last-child {
     page-break-after: auto;
   }
 }

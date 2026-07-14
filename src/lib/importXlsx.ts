@@ -94,11 +94,16 @@ export async function parseWorkbook(wb: WorkBook): Promise<ImportResult> {
     }
     classes.push({ id: classId, name: sheetName, subjects })
 
-    for (let r = 5; r < 45; r++) {
+    let maxRoll = 0
+    for (let r = 5; r < 200; r++) {
       const name = str(cellVal(cws, r, 3))
       if (!name) continue
-      const roll = num(cws[XLSX.utils.encode_cell({ r, c: 1 })]?.v)
-      if (roll == null) issues.push(`ক্লাস ${sheetName}: "${name}" — রোল নেই`)
+      const rollRaw = num(cws[XLSX.utils.encode_cell({ r, c: 1 })]?.v)
+      if (rollRaw == null) issues.push(`ক্লাস ${sheetName}: "${name}" — রোল নেই`)
+      // Fallback roll is unique per class (max+1), never a global counter,
+      // so imported IDs can't collide across classes.
+      const roll = rollRaw ?? ++maxRoll
+      if (rollRaw != null) maxRoll = Math.max(maxRoll, rollRaw)
 
       const marks: Record<string, number | null> = {}
       subjects.forEach((s, i) => {
@@ -108,9 +113,9 @@ export async function parseWorkbook(wb: WorkBook): Promise<ImportResult> {
 
       const attendance = num(cws[XLSX.utils.encode_cell({ r, c: 19 })]?.v)
       students.push({
-        id: `${classId}_${roll ?? students.length + 1}`,
+        id: `${classId}_${roll}`,
         classId,
-        roll: roll ?? 0,
+        roll,
         name,
         guardian: str(cws[XLSX.utils.encode_cell({ r, c: 4 })]?.v) || undefined,
         village: str(cws[XLSX.utils.encode_cell({ r, c: 5 })]?.v) || undefined,
@@ -133,19 +138,19 @@ export async function importXlsxFile(file: File): Promise<ImportResult> {
 /** Replace all app data with the parsed spreadsheet contents (atomic). */
 export async function applyImport(result: ImportResult): Promise<void> {
   const { school, gradingScale, classes, students } = result
+  // The spreadsheet has no MTR data, so existing MTR records are intentionally
+  // PRESERVED (never cleared) to avoid silent data loss on import.
   await db.transaction(
     'rw',
     db.school,
     db.gradingScale,
     db.classes,
     db.students,
-    db.mtrRecords,
     async () => {
       await db.school.clear()
       await db.gradingScale.clear()
       await db.classes.clear()
       await db.students.clear()
-      await db.mtrRecords.clear()
       await db.school.put(school)
       await db.gradingScale.bulkPut(gradingScale)
       await db.classes.bulkPut(classes)

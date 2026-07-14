@@ -50,6 +50,7 @@ export function lookupGpaAndGrade(
   gradingScale: GradingScaleRow[]
 ): { gpa: number; grade: string; remark: string } {
   const sorted = [...gradingScale].sort((a, b) => a.minPercent - b.minPercent)
+  if (sorted.length === 0) return { gpa: 0, grade: '\u2014', remark: '' }
   let match = sorted[0]
   for (const row of sorted) {
     if (average >= row.minPercent) match = row

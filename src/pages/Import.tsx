@@ -101,19 +101,19 @@ export default function Import() {
 
   return (
     <section className="space-y-6">
-      <h1 className="text-2xl font-bold text-maroon">ইমপোর্ট ও ব্যাকআপ</h1>
+      <h1 className="text-3xl font-heading font-bold text-bd-green-900 tracking-tight">ইমপোর্ট ও ব্যাকআপ</h1>
 
       {/* Spreadsheet import */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-lg font-semibold mb-1">স্প্রেডশিট থেকে ইমপোর্ট (.xlsx)</h2>
-        <p className="text-sm text-gray-500 mb-4">
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">স্প্রেডশিট থেকে ইমপোর্ট (.xlsx)</h2>
+        <p className="text-sm text-gray-500 mb-4 font-medium">
           বেজখণ্ড ফলাফল শিট (প্রতি ক্লাস একটি শিট + Settings) নির্বাচন করুন। ডেটা আগে প্রিভিউ করা হবে,
           তারপর প্রতিস্থাপন করা যাবে।
         </p>
 
-        <label className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 px-4 py-8 text-center cursor-pointer hover:border-maroon">
-          <span className="text-maroon font-semibold">ফাইল নির্বাচন করুন</span>
-          <span className="text-xs text-gray-400">
+        <label className="flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-bd-green-300 px-4 py-10 text-center cursor-pointer hover:border-bd-green-500 hover:bg-bd-green-50/30 transition-all duration-200">
+          <span className="text-bd-green-700 font-heading font-semibold text-lg">ফাইল নির্বাচন করুন</span>
+          <span className="text-xs text-gray-400 font-medium">
             {fileName || '.xlsx ফাইল এখানে ড্রপ করুন বা ক্লিক করুন'}
           </span>
           <input
@@ -128,15 +128,15 @@ export default function Import() {
         </label>
 
         {error && (
-          <div className="mt-3 rounded-lg bg-red-50 border border-red-300 text-red-700 text-sm px-3 py-2">
+          <div className="mt-4 rounded-xl bg-bd-red-50 border border-bd-red-300 text-bd-red-700 text-sm px-4 py-2.5">
             {error}
           </div>
         )}
 
         {result && (
-          <div className="mt-4 rounded-xl border border-maroon/30 bg-maroon/5 p-4">
-            <div className="text-sm font-semibold text-maroon">প্রিভিউ</div>
-            <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+          <div className="mt-4 rounded-2xl border border-bd-green-200 bg-bd-green-50/50 p-5">
+            <div className="text-sm font-heading font-semibold text-bd-green-900">প্রিভিউ</div>
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
               <div>
                 স্কুল: <b>{result.school.name}</b>
               </div>
@@ -150,11 +150,11 @@ export default function Import() {
                 গ্রেড স্কেল: <b>{result.gradingScale.length}</b> সারি
               </div>
             </dl>
-            <div className="mt-2 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {result.classes.map((c) => (
                 <span
                   key={c.id}
-                  className="rounded-full bg-white border border-gray-300 px-3 py-1 text-xs"
+                  className="rounded-full bg-white border border-bd-green-200 px-3 py-1.5 text-xs font-medium"
                 >
                   {CLASS_NAMES[c.id]}: {classCounts[c.id] ?? 0} • {c.subjects.length} বিষয়
                 </span>
@@ -162,11 +162,11 @@ export default function Import() {
             </div>
 
             {result.issues.length > 0 && (
-              <details className="mt-3">
-                <summary className="text-sm text-amber-700 cursor-pointer">
+              <details className="mt-4">
+                <summary className="text-sm text-gold-dark font-semibold cursor-pointer hover:text-gold transition-colors duration-200">
                   {result.issues.length} টি সতর্কতা (দেখুন)
                 </summary>
-                <ul className="mt-1 list-disc pl-5 text-xs text-gray-600 space-y-0.5">
+                <ul className="mt-2 list-disc pl-5 text-xs text-gray-600 space-y-1">
                   {result.issues.slice(0, 20).map((iss, i) => (
                     <li key={i}>{iss}</li>
                   ))}
@@ -177,7 +177,7 @@ export default function Import() {
             <button
               onClick={onCommit}
               disabled={busy}
-              className="mt-4 w-full rounded-lg bg-maroon text-white px-4 py-2.5 text-sm font-semibold disabled:opacity-50"
+              className="btn-primary mt-4 w-full"
             >
               {busy ? 'সংরক্ষণ হচ্ছে…' : 'সব ডেটা প্রতিস্থাপন করুন'}
             </button>
@@ -185,28 +185,28 @@ export default function Import() {
         )}
 
         {done && (
-          <div className="mt-3 rounded-lg bg-green-50 border border-green-300 text-green-800 text-sm px-3 py-2">
+          <div className="mt-4 rounded-xl bg-bd-green-50 border border-bd-green-300 text-bd-green-800 text-sm px-4 py-2.5 font-medium">
             স্প্রেডশিট থেকে ডেটা সফলভাবে ইমপোর্ট হয়েছে।
           </div>
         )}
       </div>
 
       {/* Backup */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-lg font-semibold mb-1">ব্যাকআপ (JSON)</h2>
-        <p className="text-sm text-gray-500 mb-4">
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">ব্যাকআপ (JSON)</h2>
+        <p className="text-sm text-gray-500 mb-4 font-medium">
           সম্পূর্ণ ডেটা এক্সপোর্ট করুন বা পূর্ববর্তী ব্যাকআপ থেকে পুনরুদ্ধার করুন।
         </p>
 
         <div className="flex flex-wrap gap-3">
           <button
             onClick={() => void downloadBackup()}
-            className="rounded-lg border border-maroon text-maroon px-4 py-2 text-sm font-semibold"
+            className="btn-secondary"
           >
             ব্যাকআপ এক্সপোর্ট
           </button>
 
-          <label className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 cursor-pointer">
+          <label className="rounded-xl border border-bd-green-200 px-4 py-2.5 text-sm text-gray-700 cursor-pointer hover:bg-bd-green-50 transition-all duration-200 font-medium">
             ব্যাকআপ থেকে পুনরুদ্ধার
             <input
               type="file"
@@ -224,45 +224,45 @@ export default function Import() {
 
         {backupFile && (
           <div className="mt-3 flex items-center gap-3">
-            <span className="text-sm text-gray-600 truncate">{backupFile.name}</span>
+            <span className="text-sm text-gray-600 font-medium truncate">{backupFile.name}</span>
             <button
               onClick={onCommitBackup}
               disabled={backupBusy}
-              className="rounded-lg bg-maroon text-white px-3 py-1.5 text-sm font-semibold disabled:opacity-50"
+              className="btn-primary"
             >
               {backupBusy ? 'পুনরুদ্ধার…' : 'পুনরুদ্ধার করুন'}
             </button>
           </div>
         )}
         {backupError && (
-          <div className="mt-2 rounded-lg bg-red-50 border border-red-300 text-red-700 text-sm px-3 py-2">
+          <div className="mt-3 rounded-xl bg-bd-red-50 border border-bd-red-300 text-bd-red-700 text-sm px-4 py-2.5">
             {backupError}
           </div>
         )}
         {backupDone && (
-          <div className="mt-2 rounded-lg bg-green-50 border border-green-300 text-green-800 text-sm px-3 py-2">
+          <div className="mt-3 rounded-xl bg-bd-green-50 border border-bd-green-300 text-bd-green-800 text-sm px-4 py-2.5 font-medium">
             ব্যাকআপ থেকে ডেটা পুনরুদ্ধার করা হয়েছে।
           </div>
         )}
       </div>
 
       {/* Storage durability status */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-lg font-semibold mb-1">স্টোরেজ অবস্থা</h2>
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">স্টোরেজ অবস্থা</h2>
         {storage === null ? (
           <p className="text-sm text-gray-500">স্টোরেজ তথ্য উপলব্ধ নয়।</p>
         ) : (
-          <div className="text-sm space-y-1">
+          <div className="text-sm space-y-2">
             <div>
               স্থায়ী স্টোরেজ:{' '}
               {storage.persisted ? (
-                <span className="text-green-700 font-semibold">হ্যাঁ ✓</span>
+                <span className="text-bd-green-700 font-semibold">হ্যাঁ ✓</span>
               ) : (
-                <span className="text-amber-700 font-semibold">না</span>
+                <span className="text-gold-dark font-semibold">না</span>
               )}
             </div>
             {!storage.persisted && (
-              <p className="text-xs text-amber-700">
+              <p className="text-xs text-gold-dark font-medium">
                 স্টোরেজ চাপের সময় ব্রাউজার ডেটা মুছে ফেলতে পারে। প্রয়োজনে ব্যাকআপ
                 এক্সপোর্ট করে রাখুন।
               </p>
@@ -278,9 +278,9 @@ export default function Import() {
       </div>
 
       {/* Auto-snapshots (undo for destructive imports/restores) */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-lg font-semibold mb-1">সাম্প্রতিক স্ন্যাপশট</h2>
-        <p className="text-sm text-gray-500 mb-3">
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">সাম্প্রতিক স্ন্যাপশট</h2>
+        <p className="text-sm text-gray-500 mb-3 font-medium">
           ইমপোর্ট বা ব্যাকআপ পুনরুদ্ধারের আগে স্বয়ংক্রিয়ভাবে স্ন্যাপশট নেওয়া হয়।
           প্রয়োজনে পূর্বাবস্থায় ফিরে যেতে পারবেন।
         </p>
@@ -288,11 +288,11 @@ export default function Import() {
         {snapshots.length === 0 ? (
           <p className="text-sm text-gray-400">কোনো স্ন্যাপশট নেই।</p>
         ) : (
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-bd-green-100">
             {snapshots.map((s) => (
-              <li key={s.id} className="py-2 flex items-center justify-between gap-3">
+              <li key={s.id} className="py-3 flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="text-sm font-medium">{s.reason}</div>
+                  <div className="text-sm font-medium text-bd-green-900">{s.reason}</div>
                   <div className="text-xs text-gray-400">
                     {new Date(s.createdAt).toLocaleString('bn-BD')}
                   </div>
@@ -309,7 +309,7 @@ export default function Import() {
                       }
                     }
                   }}
-                  className="shrink-0 rounded-lg border border-maroon text-maroon px-3 py-1.5 text-sm font-semibold"
+                  className="shrink-0 rounded-xl border border-bd-green-700 text-bd-green-700 px-4 py-2 text-sm font-semibold hover:bg-bd-green-50 transition-all duration-200"
                 >
                   পুনরুদ্ধার
                 </button>

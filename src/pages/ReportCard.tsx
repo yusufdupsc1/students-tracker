@@ -67,52 +67,60 @@ function ReportCardView({
   const rows = active.map((s) => subjectRow(s.name, s.fullMarks, student.marks?.[s.name] ?? null, scale))
 
   return (
-    <div className="report-card mx-auto max-w-[800px] border-2 border-maroon rounded-lg p-5 bg-white text-gray-900">
+    <div className="report-card mx-auto max-w-[800px] border-2 border-bd-green-800 rounded-2xl p-6 bg-white text-gray-900 shadow-soft-lg">
       {/* Header */}
       <div className="text-center">
-        <div className="text-2xl font-bold text-maroon">{school.name}</div>
-        <div className="text-sm text-gray-600">{school.village}, {school.postOffice}, {school.upazila}, {school.district}</div>
-        <div className="mt-1 h-0.5 bg-[#C9A227]" />
-        <div className="mt-1 text-sm font-semibold tracking-[0.3em] text-[#C9A227]">★ ACADEMIC RECORD ★</div>
-        <div className="text-sm text-gray-700">শ্রেণি: {classConfig.name} | ফলাফল কার্ড</div>
+        <div className="text-2xl font-heading font-bold text-bd-green-900">{school.name}</div>
+        <div className="text-sm text-gray-600 font-medium">{school.village}, {school.postOffice}, {school.upazila}, {school.district}</div>
+        <div className="mt-2 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent" />
+        <div className="mt-2 text-sm font-heading font-semibold tracking-[0.3em] text-gold">★ ACADEMIC RECORD ★</div>
+        <div className="text-sm text-gray-700 font-medium">শ্রেণি: {classConfig.name} | ফলাফল কার্ড</div>
       </div>
 
       {/* Student info */}
-      <div className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 text-sm border border-maroon rounded p-3">
-        <div><span className="text-gray-500">নাম:</span> <b>{student.name}</b></div>
-        <div><span className="text-gray-500">রোল:</span> <b>{student.roll}</b></div>
-        <div><span className="text-gray-500">মেধা স্থান:</span> <b>{rank ?? '—'}</b></div>
-        <div><span className="text-gray-500">অভিভাবক:</span> <b>{student.guardian || '—'}</b></div>
-        <div><span className="text-gray-500">গ্রাম:</span> <b>{student.village || '—'}</b></div>
-        <div><span className="text-gray-500">উপস্থিতি:</span> <b>{student.attendance != null ? student.attendance + '%' : '—'}</b></div>
+      <div className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm border border-bd-green-200 rounded-xl p-4 bg-bd-green-50/30">
+        <div><span className="text-gray-500 font-medium">নাম:</span> <b className="text-bd-green-900">{student.name}</b></div>
+        <div><span className="text-gray-500 font-medium">রোল:</span> <b className="text-bd-green-900">{student.roll}</b></div>
+        <div><span className="text-gray-500 font-medium">মেধা স্থান:</span> <b className="text-bd-green-900">{rank ?? '—'}</b></div>
+        <div><span className="text-gray-500 font-medium">অভিভাবক:</span> <b className="text-bd-green-900">{student.guardian || '—'}</b></div>
+        <div><span className="text-gray-500 font-medium">গ্রাম:</span> <b className="text-bd-green-900">{student.village || '—'}</b></div>
+        <div><span className="text-gray-500 font-medium">উপস্থিতি:</span> <b className="text-bd-green-900">{student.attendance != null ? student.attendance + '%' : '—'}</b></div>
       </div>
 
       {/* Subject table */}
-      <div className="overflow-x-auto">
-        <table className="mt-3 w-full border-collapse text-sm leading-5 min-w-[640px]">
+      <div className="overflow-x-auto mt-4">
+        <table className="w-full border-collapse text-sm leading-5 min-w-[640px]">
           <thead>
-            <tr className="bg-maroon text-white">
-              <th className="border border-maroon px-2 py-1 text-left">বিষয়</th>
-              <th className="border border-maroon px-2 py-1">পূর্ণ</th>
-              <th className="border border-maroon px-2 py-1">প্রাপ্ত</th>
-              <th className="border border-maroon px-2 py-1">%</th>
-              <th className="border border-maroon px-2 py-1">GPA</th>
-              <th className="border border-maroon px-2 py-1">গ্রেড</th>
-              <th className="border border-maroon px-2 py-1">স্ট্যাটাস</th>
-              <th className="border border-maroon px-2 py-1 text-left">মন্তব্য</th>
+            <tr className="bg-gradient-to-r from-bd-green-800 to-bd-green-700 text-white">
+              <th className="border border-bd-green-700 px-3 py-2 text-left font-semibold">বিষয়</th>
+              <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">পূর্ণ</th>
+              <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">প্রাপ্ত</th>
+              <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">%</th>
+              <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">GPA</th>
+              <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">গ্রেড</th>
+              <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">স্ট্যাটাস</th>
+              <th className="border border-bd-green-700 px-3 py-2 text-left font-semibold">মন্তব্য</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.name}>
-                <td className="border border-maroon px-2 py-1">{r.name}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{r.full}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{r.obtained}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{r.pct}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{r.gpa}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{r.grade}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{r.status}</td>
-                <td className="border border-maroon px-2 py-1">{r.remark}</td>
+              <tr key={r.name} className="hover:bg-bd-green-50/30 transition-colors duration-150">
+                <td className="border border-bd-green-200 px-3 py-2 font-medium">{r.name}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{r.full}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{r.obtained}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{r.pct}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{r.gpa}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center font-semibold">{r.grade}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${
+                    r.status === 'Pass' ? 'bg-bd-green-100 text-bd-green-800 border-bd-green-300' :
+                    r.status === 'Fail' ? 'bg-bd-red-100 text-bd-red-800 border-bd-red-300' :
+                    'bg-gold/15 text-yellow-800 border-gold/30'
+                  }`}>
+                    {r.status}
+                  </span>
+                </td>
+                <td className="border border-bd-green-200 px-3 py-2">{r.remark}</td>
               </tr>
             ))}
           </tbody>
@@ -120,31 +128,31 @@ function ReportCardView({
       </div>
 
       {/* Summary */}
-      <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm font-semibold">
-        <div>মোট নম্বর: <span className="text-maroon">{total}</span></div>
-        <div>গড় %: <span className="text-maroon">{avg.toFixed(2)}</span></div>
-        <div>GPA: <span className="text-maroon">{gpa.toFixed(2)}</span></div>
-        <div>গ্রেড: <span className="text-maroon">{grade}</span></div>
-        <div>ফলাফল: <span className="text-maroon">{result}</span></div>
+      <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+        <div>মোট নম্বর: <span className="text-bd-green-700">{total}</span></div>
+        <div>গড় %: <span className="text-bd-green-700">{avg.toFixed(2)}</span></div>
+        <div>GPA: <span className="text-bd-green-700">{gpa.toFixed(2)}</span></div>
+        <div>গ্রেড: <span className="text-bd-green-700">{grade}</span></div>
+        <div>ফলাফল: <span className="text-bd-green-700">{result}</span></div>
         <div>{promotionLabel(result)}</div>
       </div>
 
       {/* Performance meter */}
-      <div className="mt-2">
-        <div className="text-xs text-gray-500 mb-1">Performance Meter</div>
-        <div className="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
-          <div className="h-full bg-[#C9A227]" style={{ width: `${avg}%` }} />
+      <div className="mt-3">
+        <div className="text-xs text-gray-500 font-medium mb-1">Performance Meter</div>
+        <div className="h-3 w-full bg-bd-green-100 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-gold-dark to-gold transition-all duration-500" style={{ width: `${avg}%` }} />
         </div>
       </div>
 
       {/* Remark */}
-      <div className="mt-2 text-sm">মন্তব্য: <b>{remark}</b></div>
+      <div className="mt-3 text-sm font-medium">মন্তব্য: <b className="text-bd-green-900">{remark}</b></div>
 
       {/* Signature lines */}
       <div className="mt-6 flex justify-between text-sm">
-        <div className="border-t border-gray-400 pt-1 w-1/4 text-center">ক্লাস শিক্ষক</div>
-        <div className="border-t border-gray-400 pt-1 w-1/4 text-center">প্রধান শিক্ষক</div>
-        <div className="border-t border-gray-400 pt-1 w-1/4 text-center">অভিভাবক</div>
+        <div className="border-t border-gray-400 pt-2 w-1/4 text-center text-gray-600">ক্লাস শিক্ষক</div>
+        <div className="border-t border-gray-400 pt-2 w-1/4 text-center text-gray-600">প্রধান শিক্ষক</div>
+        <div className="border-t border-gray-400 pt-2 w-1/4 text-center text-gray-600">অভিভাবক</div>
       </div>
     </div>
   )
@@ -190,15 +198,15 @@ export default function ReportCard() {
     <div>
       {/* Controls (hidden when printing) */}
       <div className="no-print space-y-3">
-        <h1 className="text-2xl font-bold text-maroon">ফলাফল কার্ড</h1>
+        <h1 className="text-3xl font-heading font-bold text-bd-green-900 tracking-tight">ফলাফল কার্ড</h1>
         <div className="flex flex-wrap gap-2 items-center">
-          <div className="flex gap-1">
+          <div className="flex gap-1.5">
             {CLASS_LIST.map((c) => (
               <button
                 key={c}
                 onClick={() => setClassId(c)}
-                className={`px-3 py-2 rounded-lg text-sm border ${
-                  classId === c ? 'bg-maroon text-white border-maroon' : 'border-gray-300 text-gray-700'
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                  classId === c ? 'tab-active' : 'tab-inactive'
                 }`}
               >
                 {['প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম'][c - 1]}
@@ -207,7 +215,7 @@ export default function ReportCard() {
           </div>
           {!batch && (
             <select
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="glass-input"
               value={selected?.id ?? ''}
               onChange={(e) => setStudentId(e.target.value)}
             >
@@ -218,25 +226,25 @@ export default function ReportCard() {
               ))}
             </select>
           )}
-          <label className="flex items-center gap-2 text-sm ml-auto">
-            <input type="checkbox" checked={batch} onChange={(e) => setBatch(e.target.checked)} />
+          <label className="flex items-center gap-2 text-sm ml-auto font-medium text-gray-700">
+            <input type="checkbox" checked={batch} onChange={(e) => setBatch(e.target.checked)} className="rounded border-bd-green-300 text-bd-green-700 focus:ring-bd-green-500" />
             ব্যাচ প্রিন্ট (পুরো ক্লাস)
           </label>
           <button
-            className="rounded-lg bg-maroon text-white px-4 py-2 text-sm"
+            className="btn-primary"
             onClick={() => window.print()}
           >
             প্রিন্ট করুন
           </button>
         </div>
         {batch && (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 font-medium">
             ব্যাচ মোড: এই ক্লাসের {sorted.length} জন শিক্ষার্থীর জন্য একটি করে পৃষ্ঠা তৈরি হবে।
           </p>
         )}
       </div>
 
-      <div className="mt-4 space-y-6">
+      <div className="mt-5 space-y-6">
         {visible.map((s) => (
           <ReportCardView
             key={s.id}

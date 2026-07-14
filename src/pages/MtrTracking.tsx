@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/schema'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
@@ -41,20 +41,20 @@ function TriState({
   onChange: (v: MTRSkillStatus) => void
 }) {
   const opts: { v: MTRSkillStatus; label: string; active: string }[] = [
-    { v: 'unassessed', label: '—', active: 'bg-gray-300 text-gray-700 font-bold' },
-    { v: 'yes', label: 'হ্যাঁ', active: 'bg-green-600 text-white font-bold' },
-    { v: 'no', label: 'না', active: 'bg-red-600 text-white font-bold' }
+    { v: 'unassessed', label: '—', active: 'bg-gray-100 text-gray-600 font-bold border border-gray-200' },
+    { v: 'yes', label: 'হ্যাঁ', active: 'bg-bd-green-600 text-white font-bold shadow-sm' },
+    { v: 'no', label: 'না', active: 'bg-bd-red-600 text-white font-bold shadow-sm' }
   ]
   return (
-    <div className="inline-flex rounded-lg border border-gray-300 overflow-hidden">
+    <div className="inline-flex rounded-xl border border-bd-green-200 overflow-hidden bg-white/60">
       {opts.map((o) => (
         <button
           key={o.v}
           type="button"
           title={o.v === 'unassessed' ? 'মূল্যায়ন হয়নি' : o.v === 'yes' ? 'সক্ষম' : 'অক্ষম'}
           onClick={() => onChange(o.v)}
-          className={`px-3 py-1.5 text-sm min-w-[44px] ${
-            value === o.v ? o.active : 'bg-white text-gray-500'
+          className={`px-4 py-2 text-sm min-w-[48px] transition-all duration-200 ${
+            value === o.v ? o.active : 'bg-transparent text-gray-500 hover:bg-bd-green-50'
           }`}
         >
           {o.label}
@@ -86,7 +86,7 @@ export default function MTRTracking() {
 
   // Local editable mirror (snappy UI), re-synced on class change.
   const [records, setRecords] = useState<Record<string, MTRRecord>>({})
-  const lastClass = useState({ current: -1 })[0]
+  const lastClass = useRef(-1)
   useEffect(() => {
     if (studentsInClass && mtrInClass && (Object.keys(records).length === 0 || lastClass.current !== classId)) {
       const map: Record<string, MTRRecord> = {}
@@ -175,7 +175,7 @@ export default function MTRTracking() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-maroon">MTR ট্র্যাকিং</h1>
+      <h1 className="text-3xl font-heading font-bold text-bd-green-900 mb-4 tracking-tight">MTR ট্র্যাকিং</h1>
 
       {/* Tabs */}
       <div className="no-print mt-3 flex flex-wrap gap-2">
@@ -187,8 +187,8 @@ export default function MTRTracking() {
           <button
             key={t.k}
             onClick={() => setTab(t.k as 'entry' | 'summary' | 'official')}
-            className={`px-4 py-2 rounded-lg text-sm border ${
-              tab === t.k ? 'bg-maroon text-white border-maroon' : 'border-gray-300 text-gray-700'
+            className={`px-5 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
+              tab === t.k ? 'tab-active' : 'tab-inactive'
             }`}
           >
             {t.label}
@@ -197,14 +197,14 @@ export default function MTRTracking() {
       </div>
 
       {tab === 'entry' && (
-        <div className="mt-4 space-y-4">
+        <div className="mt-5 space-y-4">
           <div className="no-print flex flex-wrap gap-2">
             {CLASS_LIST.map((c) => (
               <button
                 key={c}
                 onClick={() => setClassId(c)}
-                className={`px-3 py-2 rounded-lg text-sm border ${
-                  classId === c ? 'bg-maroon text-white border-maroon' : 'border-gray-300 text-gray-700'
+                className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                  classId === c ? 'tab-active' : 'tab-inactive'
                 }`}
               >
                 {CLASS_NAMES[c]}
@@ -215,13 +215,13 @@ export default function MTRTracking() {
           {studentsInClass.map((s) => {
             const rec = records[s.id] ?? defaultRecord(s)
             return (
-              <div key={s.id} className="bg-white rounded-xl border border-gray-200 p-4">
-                <div className="font-semibold">
+              <div key={s.id} className="glass-card p-4 hover:shadow-soft-lg transition-all duration-200">
+                <div className="font-heading font-semibold text-base">
                   রোল {s.roll} — {s.name}
                 </div>
                 {SKILLS.map((sk) => (
-                  <div key={sk.key} className="flex items-center justify-between mt-2">
-                    <span className="text-sm text-gray-600">{sk.label}</span>
+                  <div key={sk.key} className="flex items-center justify-between mt-3">
+                    <span className="text-sm text-gray-600 font-medium">{sk.label}</span>
                     <TriState
                       value={rec[sk.key]}
                       onChange={(v) => setSkill(rec.studentId, sk.key, v)}
@@ -235,7 +235,7 @@ export default function MTRTracking() {
             <p className="text-gray-500">এই ক্লাসে কোনো শিক্ষার্থী নেই।</p>
           )}
           {showSaved && (
-            <div className="no-print fixed bottom-20 md:bottom-6 right-4 z-30 rounded-full bg-maroon px-4 py-2 text-white text-sm shadow-lg">
+            <div className="no-print fixed bottom-20 md:bottom-6 right-4 z-30 rounded-full bg-bd-green-700 px-5 py-2.5 text-white text-sm font-medium shadow-soft-lg">
               সংরক্ষিত ✓
             </div>
           )}
@@ -243,48 +243,48 @@ export default function MTRTracking() {
       )}
 
       {tab === 'summary' && (
-        <div className="mt-4 bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-lg font-semibold mb-3">ক্লাসভিত্তিক MTR সারসংক্ষেপ</h2>
-          <div className="overflow-x-auto">
+        <div className="mt-5 glass-card p-6">
+          <h2 className="text-lg font-heading font-semibold mb-4 text-bd-green-900">ক্লাসভিত্তিক MTR সারসংক্ষেপ</h2>
+          <div className="overflow-x-auto rounded-xl border border-bd-green-100">
             <table className="w-full text-left border-collapse min-w-[560px]">
               <thead>
-                <tr className="text-sm text-gray-600 border-b border-gray-200">
-                  <th className="py-2 pr-4">ক্লাস</th>
-                  <th className="py-2 pr-4">মোট</th>
-                  <th className="py-2 pr-4">সক্ষম</th>
-                  <th className="py-2 pr-4">অক্ষম</th>
-                  <th className="py-2 pr-4">মূল্যায়ন বাকি</th>
-                  <th className="py-2">% অর্জন</th>
+                <tr className="text-sm text-bd-green-800 bg-bd-green-50/50">
+                  <th className="py-3 pr-4 font-semibold">ক্লাস</th>
+                  <th className="py-3 pr-4 font-semibold">মোট</th>
+                  <th className="py-3 pr-4 font-semibold">সক্ষম</th>
+                  <th className="py-3 pr-4 font-semibold">অক্ষম</th>
+                  <th className="py-3 pr-4 font-semibold">মূল্যায়ন বাকি</th>
+                  <th className="py-3 font-semibold">% অর্জন</th>
                 </tr>
               </thead>
               <tbody>
                 {CLASS_LIST.map((c) => {
                   const sm = classSummary(c)
                   return (
-                    <tr key={c} className="border-b border-gray-100">
-                      <td className="py-2 pr-4 font-medium">{CLASS_NAMES[c]}</td>
-                      <td className="py-2 pr-4">{sm.total}</td>
-                      <td className="py-2 pr-4">{sm.yes}</td>
-                      <td className="py-2 pr-4">{sm.no}</td>
-                      <td className="py-2 pr-4">{sm.unassessed}</td>
-                      <td className="py-2">{sm.achievedPct != null ? sm.achievedPct.toFixed(1) + '%' : '—'}</td>
+                    <tr key={c} className="border-t border-bd-green-100">
+                      <td className="py-3 pr-4 font-medium">{CLASS_NAMES[c]}</td>
+                      <td className="py-3 pr-4">{sm.total}</td>
+                      <td className="py-3 pr-4">{sm.yes}</td>
+                      <td className="py-3 pr-4">{sm.no}</td>
+                      <td className="py-3 pr-4">{sm.unassessed}</td>
+                      <td className="py-3">{sm.achievedPct != null ? sm.achievedPct.toFixed(1) + '%' : '—'}</td>
                     </tr>
                   )
                 })}
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-gray-400">
+          <p className="mt-4 text-xs text-gray-400 font-medium">
             % অর্জন = সক্ষম ÷ (সক্ষম + অক্ষম) — মূল্যায়ন-বাকি শিক্ষার্থী গণনায় আসে না।
           </p>
         </div>
       )}
 
       {tab === 'official' && (
-        <div className="mt-4">
-          <div className="no-print mb-3">
+        <div className="mt-5">
+          <div className="no-print mb-4">
             <button
-              className="rounded-lg bg-maroon text-white px-4 py-2 text-sm"
+              className="btn-primary"
               onClick={() => setPrinting(true)}
             >
               প্রিন্ট করুন (সরকারি ফর্ম)
@@ -305,42 +305,42 @@ function OfficialForm({
   skillCounts: (cid: number, skill: SkillKey) => { total: number; yes: number; no: number; unassessed: number; achievedPct: number | null }
 }) {
   return (
-    <div className="official-print mx-auto max-w-[800px] border-2 border-maroon rounded-lg p-5 bg-white">
+    <div className="official-print mx-auto max-w-[800px] border-2 border-bd-green-800 rounded-2xl p-6 bg-white shadow-soft-lg">
       <div className="text-center">
-        <div className="text-xl font-bold text-maroon">{school.name}</div>
-        <div className="text-sm text-gray-600">
+        <div className="text-2xl font-heading font-bold text-bd-green-900">{school.name}</div>
+        <div className="text-sm text-gray-600 font-medium">
           {school.village}, {school.postOffice}, {school.upazila}, {school.district}
         </div>
-        <div className="mt-1 h-0.5 bg-[#C9A227]" />
-        <div className="mt-1 text-sm font-semibold tracking-[0.2em] text-[#C9A227]">
+        <div className="mt-2 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent" />
+        <div className="mt-2 text-sm font-heading font-semibold tracking-[0.2em] text-gold">
           MID TERM REVIEW (MTR) — সরকারি ফর্ম
         </div>
       </div>
 
-      <table className="mt-3 w-full border-collapse text-sm">
+      <table className="mt-4 w-full border-collapse text-sm">
         <thead>
-          <tr className="bg-maroon text-white">
-            <th className="border border-maroon px-2 py-1">ক্রমিক</th>
-            <th className="border border-maroon px-2 py-1 text-left">শ্রেণি ও বিষয়</th>
-            <th className="border border-maroon px-2 py-1">মোট</th>
-            <th className="border border-maroon px-2 py-1">সক্ষম</th>
-            <th className="border border-maroon px-2 py-1">অক্ষম</th>
-            <th className="border border-maroon px-2 py-1">মূল্যায়ন বাকি</th>
-            <th className="border border-maroon px-2 py-1">% অর্জন</th>
+          <tr className="bg-gradient-to-r from-bd-green-800 to-bd-green-700 text-white">
+            <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">ক্রমিক</th>
+            <th className="border border-bd-green-700 px-3 py-2 text-left font-semibold">শ্রেণি ও বিষয়</th>
+            <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">মোট</th>
+            <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">সক্ষম</th>
+            <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">অক্ষম</th>
+            <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">মূল্যায়ন বাকি</th>
+            <th className="border border-bd-green-700 px-3 py-2 text-center font-semibold">% অর্জন</th>
           </tr>
         </thead>
         <tbody>
           {OFFICIAL_ROWS.map((row, i) => {
             const c = skillCounts(row.classId, row.skill)
             return (
-              <tr key={row.label}>
-                <td className="border border-maroon px-2 py-1 text-center">{i + 1}</td>
-                <td className="border border-maroon px-2 py-1">{row.label}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{c.total}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{c.yes}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{c.no}</td>
-                <td className="border border-maroon px-2 py-1 text-center">{c.unassessed}</td>
-                <td className="border border-maroon px-2 py-1 text-center">
+              <tr key={row.label} className="hover:bg-bd-green-50/30 transition-colors duration-150">
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{i + 1}</td>
+                <td className="border border-bd-green-200 px-3 py-2 font-medium">{row.label}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{c.total}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{c.yes}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{c.no}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">{c.unassessed}</td>
+                <td className="border border-bd-green-200 px-3 py-2 text-center">
                   {c.achievedPct != null ? c.achievedPct.toFixed(1) + '%' : '—'}
                 </td>
               </tr>
@@ -350,8 +350,8 @@ function OfficialForm({
       </table>
 
       <div className="mt-6 flex justify-between text-sm">
-        <div className="border-t border-gray-400 pt-1 w-1/3 text-center">শিক্ষক</div>
-        <div className="border-t border-gray-400 pt-1 w-1/3 text-center">প্রধান শিক্ষক</div>
+        <div className="border-t border-gray-400 pt-2 w-1/3 text-center text-gray-600">শিক্ষক</div>
+        <div className="border-t border-gray-400 pt-2 w-1/3 text-center text-gray-600">প্রধান শিক্ষক</div>
       </div>
     </div>
   )

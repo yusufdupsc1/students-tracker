@@ -23,10 +23,10 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-sm text-gray-600">{label}</span>
+      <span className="text-sm font-medium text-gray-600">{label}</span>
       <input
         type={type}
-        className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-maroon focus:outline-none"
+        className="glass-input mt-1.5"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -83,6 +83,7 @@ export default function Settings() {
     return dup
   })()
   const scaleValid =
+    scale.length > 0 &&
     !scaleDuplicate &&
     scale.every(
       (r) =>
@@ -158,11 +159,11 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-maroon">সেটিংস</h1>
+      <h1 className="text-3xl font-heading font-bold text-bd-green-900 tracking-tight">সেটিংস</h1>
 
       {/* School info */}
-      <section className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="text-lg font-semibold mb-4">স্কুলের তথ্য</h2>
+      <section className="glass-card p-6">
+        <h2 className="text-lg font-heading font-semibold mb-4 text-bd-green-900">স্কুলের তথ্য</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="স্কুলের নাম" value={school?.name ?? ''} onChange={(v) => onSchool({ name: v })} />
           <Field label="গ্রাম" value={school?.village ?? ''} onChange={(v) => onSchool({ village: v })} />
@@ -170,62 +171,62 @@ export default function Settings() {
           <Field label="উপজেলা" value={school?.upazila ?? ''} onChange={(v) => onSchool({ upazila: v })} />
           <Field label="জেলা" value={school?.district ?? ''} onChange={(v) => onSchool({ district: v })} />
         </div>
-        <p className="mt-3 text-xs text-gray-400">পরিবর্তন স্বয়ংক্রিয়ভাবে সংরক্ষিত হয়।</p>
+        <p className="mt-4 text-xs text-gray-400 font-medium">পরিবর্তন স্বয়ংক্রিয়ভাবে সংরক্ষিত হয়।</p>
       </section>
 
       {/* Grading scale */}
-      <section className="bg-white rounded-xl border border-gray-200 p-5">
+      <section className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">গ্রেড স্কেল</h2>
+          <h2 className="text-lg font-heading font-semibold text-bd-green-900">গ্রেড স্কেল</h2>
           <button
-            className="rounded-lg bg-maroon px-3 py-2 text-white text-sm"
+            className="btn-primary"
             onClick={addScaleRow}
           >
             + সারি যোগ করুন
           </button>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-bd-green-100">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="text-sm text-gray-600 border-b border-gray-200">
-                <th className="py-2 pr-3">ন্যূনতম %</th>
-                <th className="py-2 pr-3">GPA</th>
-                <th className="py-2 pr-3">গ্রেড</th>
-                <th className="py-2"></th>
+              <tr className="text-sm text-bd-green-800 bg-bd-green-50/50">
+                <th className="py-3 pr-3 font-semibold">ন্যূনতম %</th>
+                <th className="py-3 pr-3 font-semibold">GPA</th>
+                <th className="py-3 pr-3 font-semibold">গ্রেড</th>
+                <th className="py-3"></th>
               </tr>
             </thead>
             <tbody>
               {scaleSorted.map((r) => (
-                <tr key={r._uid} className="border-b border-gray-100">
-                  <td className="py-2 pr-3">
+                <tr key={r._uid} className="border-t border-bd-green-100">
+                  <td className="py-2.5 pr-3">
                     <input
                       type="number"
-                      className="w-24 rounded-lg border border-gray-300 px-2 py-1"
+                      className="glass-input w-24"
                       value={r.minPercent}
                       onChange={(e) =>
                         updateScaleRow(r._uid, { minPercent: Number(e.target.value) })
                       }
                     />
                   </td>
-                  <td className="py-2 pr-3">
+                  <td className="py-2.5 pr-3">
                     <input
                       type="number"
                       step="0.01"
-                      className="w-20 rounded-lg border border-gray-300 px-2 py-1"
+                      className="glass-input w-20"
                       value={r.gpa}
                       onChange={(e) => updateScaleRow(r._uid, { gpa: Number(e.target.value) })}
                     />
                   </td>
-                  <td className="py-2 pr-3">
+                  <td className="py-2.5 pr-3">
                     <input
-                      className="w-20 rounded-lg border border-gray-300 px-2 py-1"
+                      className="glass-input w-20"
                       value={r.grade}
                       onChange={(e) => updateScaleRow(r._uid, { grade: e.target.value })}
                     />
                   </td>
-                  <td className="py-2">
+                  <td className="py-2.5">
                     <button
-                      className="text-red-600 text-sm"
+                      className="text-bd-red-600 text-sm font-medium hover:text-bd-red-800 transition-colors duration-200"
                       onClick={() => removeScaleRow(r._uid)}
                     >
                       মুছুন
@@ -244,13 +245,15 @@ export default function Settings() {
           </table>
         </div>
         {scaleDuplicate && (
-          <p className="mt-2 text-sm text-red-600">
+          <p className="mt-3 text-sm text-bd-red-700 font-medium">
             ন্যূনতম % এর মান ডুপ্লিকেট হতে পারবে না (রেঞ্জ ওভারল্যাপ)।
           </p>
         )}
         {!scaleValid && !scaleDuplicate && (
-          <p className="mt-2 text-sm text-red-600">
-            সব সারিতে বৈধ % (০–১০০), GPA ও গ্রেড থাকতে হবে।
+          <p className="mt-3 text-sm text-bd-red-700 font-medium">
+            {scale.length === 0
+              ? 'কমপক্ষে একটি গ্রেড সারি থাকতে হবে।'
+              : 'সব সারিতে বৈধ % (০–১০০), GPA ও গ্রেড থাকতে হবে।'}
           </p>
         )}
         <p className="mt-3 text-xs text-gray-400">
@@ -260,51 +263,51 @@ export default function Settings() {
 
       {/* Per-class subjects */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">ক্লাস অনুযায়ী বিষয় ও পূর্ণমান</h2>
+        <h2 className="text-lg font-heading font-semibold text-bd-green-900">ক্লাস অনুযায়ী বিষয় ও পূর্ণমান</h2>
         {classes.map((cls) => (
-          <div key={cls.id} className="bg-white rounded-xl border border-gray-200 p-5">
+          <div key={cls.id} className="glass-card p-6">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-maroon">ক্লাস {cls.name}</h3>
+              <h3 className="font-heading font-semibold text-bd-green-900">ক্লাস {cls.name}</h3>
               <button
-                className="rounded-lg border border-maroon px-3 py-1.5 text-maroon text-sm disabled:opacity-40"
+                className="rounded-xl border border-bd-green-700 px-4 py-2 text-bd-green-700 text-sm font-semibold disabled:opacity-40 hover:bg-bd-green-50 transition-all duration-200"
                 disabled={cls.subjects.length >= 8}
                 onClick={() => addSubject(cls.id)}
               >
                 + বিষয় (স্লট {cls.subjects.length}/8)
               </button>
             </div>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-xl border border-bd-green-100">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="text-sm text-gray-600 border-b border-gray-200">
-                    <th className="py-2 pr-3">বিষয়ের নাম</th>
-                    <th className="py-2 pr-3">পূর্ণমান (০ = নিষ্ক্রিয়)</th>
-                    <th className="py-2"></th>
+                  <tr className="text-sm text-bd-green-800 bg-bd-green-50/50">
+                    <th className="py-3 pr-3 font-semibold">বিষয়ের নাম</th>
+                    <th className="py-3 pr-3 font-semibold">পূর্ণমান (০ = নিষ্ক্রিয়)</th>
+                    <th className="py-3"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {cls.subjects.map((s) => (
-                    <tr key={s.id} className="border-b border-gray-100">
-                      <td className="py-2 pr-3">
+                    <tr key={s.id} className="border-t border-bd-green-100">
+                      <td className="py-2.5 pr-3">
                         <input
-                          className="w-full min-w-[160px] rounded-lg border border-gray-300 px-2 py-1"
+                          className="glass-input w-full min-w-[160px]"
                           value={s.name}
                           onChange={(e) => updateSubject(cls.id, s.id, { name: e.target.value })}
                         />
                       </td>
-                      <td className="py-2 pr-3">
+                      <td className="py-2.5 pr-3">
                         <input
                           type="number"
-                          className="w-28 rounded-lg border border-gray-300 px-2 py-1"
+                          className="glass-input w-28"
                           value={s.fullMarks}
                           onChange={(e) =>
                             updateSubject(cls.id, s.id, { fullMarks: Number(e.target.value) })
                           }
                         />
                       </td>
-                      <td className="py-2">
+                      <td className="py-2.5">
                         <button
-                          className="text-red-600 text-sm"
+                          className="text-bd-red-600 text-sm font-medium hover:text-bd-red-800 transition-colors duration-200"
                           onClick={() => removeSubject(cls.id, s.id)}
                         >
                           মুছুন
@@ -328,7 +331,7 @@ export default function Settings() {
 
       {/* Saved indicator */}
       {showSaved && (
-        <div className="fixed bottom-20 md:bottom-6 right-4 z-30 rounded-full bg-maroon px-4 py-2 text-white text-sm shadow-lg">
+        <div className="fixed bottom-20 md:bottom-6 right-4 z-30 rounded-full bg-bd-green-700 px-5 py-2.5 text-white text-sm font-medium shadow-soft-lg">
           সংরক্ষিত ✓
         </div>
       )}

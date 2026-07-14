@@ -34,6 +34,54 @@ this cycle between PROGRESS.md claims and actual code.
 
 - [x] **P1 robustness + perf**: Route-level `ErrorBoundary` wraps every page (and the whole app) so a render crash shows a Bengali "retry" card instead of a blank screen (F3). `seedRealData` now dynamic-imports `seed.json`, so the 42 KB real dataset is a separate on-demand chunk loaded only on first run (F7). Dashboard derived computations wrapped in `useMemo` keyed on data (F7). Vendor `manualChunks` split react-vendor / dexie / recharts / xlsx (F8). Result: initial `index` chunk dropped from ~298 KB (94 KB gzip) to ~9.5 KB (4 KB gzip); seed data deferred. `verify` gate green.
 
+## Cycle 2026-07-14 — serial code-review: faults & loopholes fixed
+
+Full serial read of every source file (types, db schema, calculations, all 7
+pages, layout, lib, hooks, CSS, config) surfaced the following real defects.
+All fixed and verified green via `npm run verify` (typecheck + 13 tests + build).
+
+Correctness / crash (P0):
+- `lookupGpaAndGrade` crashed (read of `undefined.gpa`) on an empty grading
+  scale. Added a defensive fallback `return { gpa: 0, grade: '\u2014', remark: '' }`.
+- `Dashboard` `ready` did not require `scale.length > 0`, so an emptied scale
+  could crash the derived calcs. Now gated on `scale.length > 0` (matches the
+  other pages, which already guard).
+- `Settings` allowed persisting an **empty** grading scale (`scaleValid` was
+  vacuously true for `[]`), which would soft-lock Roster/Report/Search on reload.
+  `scaleValid` now requires `scale.length > 0` with a clear Bengali message.
+- `xlsx` import silently **wiped all MTR records** (cleared `mtrRecords` but the
+  spreadsheet carries no MTR data). `applyImport` no longer touches `mtrRecords`,
+  so MTR entered in-app is preserved across spreadsheet refreshes (data-loss fix).
+- `MtrTracking`: `mtrInClass` `useMemo` dependency was `[mtrAll]` while it
+  filtered by `classId` — switching class could show the wrong class's records.
+  Added `classId` to deps.
+
+Robustness / data integrity (P1):
+- `MtrTracking`: replaced the `useState({ current: -1 })[0]` mutation hack with
+  a proper `useRef(-1)` (idiomatic, no spurious no-op re-render on every change).
+- `xlsx` import hard-capped reading at 40 students/class (`r < 45`); larger
+  classes were silently truncated. Now reads up to 200 rows.
+- `xlsx` import fallback roll used a global `students.length + 1` counter,
+  producing colliding `${classId}_N` IDs across classes. Now a per-class `maxRoll`
+  (unique `max+1` fallback) prevents collisions.
+- `ClassRoster` accepted marks `< 0` or `> fullMarks` (UI only flagged sub-threshold).
+  `handleSave` now rejects marks outside `0..fullMarks` with a Bengali error.
+- `backup.ts` `applyBackup` parsed JSON with no shape check (a malformed/old file
+  could corrupt the DB or throw mid-transaction). Now validates it's an object
+  with `gradingScale`/`classes`/`students` arrays before applying.
+
+Cleanup (P2):
+- Removed the **duplicate** `getActiveSubjects` in `src/db/schema.ts` (the
+  canonical one in `src/lib/calculations.ts` is what every page imports) to
+  eliminate drift between two copies of the active-subject rule.
+- `print.css` referenced the deleted `SutonyMJ` font; swapped to `Hind Siliguri`
+  (self-hosted, offline) — printed report cards now render Bengali correctly
+  offline, matching the on-screen font.
+
+No new features added; all changes are bug/loophole fixes consistent with the
+established offline-first, Bengali, mobile-first design. No drift found between
+PROGRESS.md claims and actual code this cycle.
+
 ## Next (deferred — needs decision or larger scope)
 - Repository layer extraction (F6/F8/testability): wrap Dexie in a repo module so calc/UI are easier to unit-test without IndexedDB.
 - Repository/print-parity tests (F11): assert Report Card/MTR print output matches on-screen; result-policy strategy.

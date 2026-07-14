@@ -119,6 +119,15 @@ describe('calculateMeritRank', () => {
     { name: 'English', fullMarks: 50 },
     { name: 'গণিত', fullMarks: 50 }
   ])
+describe('lookupGpaAndGrade (defensive)', () => {
+  it('returns a safe fallback (no crash) for an empty grading scale', () => {
+    const r = lookupGpaAndGrade(50, [])
+    expect(r.gpa).toBe(0)
+    expect(r.grade).toBe('\u2014')
+    expect(r.remark).toBe('')
+  })
+})
+
   it('ranks by total descending with competition ties', () => {
     const list = [
       student(1, { বাংলা: 50, English: 50, গণিত: 50 }), // 150

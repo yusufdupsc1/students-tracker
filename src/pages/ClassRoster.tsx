@@ -16,9 +16,9 @@ const CLASS_LIST = [1, 2, 3, 4, 5]
 const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
 
 const RESULT_STYLE: Record<'Pass' | 'Fail' | 'Incomplete', string> = {
-  Pass: 'bg-green-100 text-green-800 border-green-300',
-  Fail: 'bg-red-100 text-red-800 border-red-300',
-  Incomplete: 'bg-amber-100 text-amber-800 border-amber-300'
+  Pass: 'bg-bd-green-100 text-bd-green-800 border-bd-green-300',
+  Fail: 'bg-bd-red-100 text-bd-red-800 border-bd-red-300',
+  Incomplete: 'bg-gold/15 text-yellow-800 border-gold/30'
 }
 const RESULT_LABEL: Record<'Pass' | 'Fail' | 'Incomplete', string> = {
   Pass: 'উত্তীর্ণ',
@@ -29,7 +29,7 @@ const RESULT_LABEL: Record<'Pass' | 'Fail' | 'Incomplete', string> = {
 function ResultBadge({ result }: { result: 'Pass' | 'Fail' | 'Incomplete' }) {
   return (
     <span
-      className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold border ${RESULT_STYLE[result]}`}
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${RESULT_STYLE[result]}`}
     >
       {RESULT_LABEL[result]}
     </span>
@@ -91,7 +91,7 @@ function StudentFormModal({
     <div className="fixed inset-0 z-40 flex items-end md:items-center justify-center bg-black/40 p-0 md:p-4">
       <div className="bg-white w-full md:max-w-lg md:rounded-xl rounded-t-xl max-h-[92vh] flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-maroon">
+          <h2 className="text-lg font-heading font-semibold text-bd-green-900">
             {form.id ? 'শিক্ষার্থী সম্পাদনা' : 'নতুন শিক্ষার্থী'}
           </h2>
           <button
@@ -205,7 +205,7 @@ function StudentFormModal({
           </button>
           <button
             onClick={onSave}
-            className="flex-1 rounded-lg bg-maroon text-white px-4 py-2 text-sm font-semibold"
+            className="btn-primary flex-1"
           >
             সংরক্ষণ
           </button>
@@ -285,6 +285,14 @@ export default function ClassRoster() {
           setError(`${s.name}: নম্বর সঠিক নয়`)
           return
         }
+        if (n < 0) {
+          setError(`${s.name}: নম্বর ০-এর কম হতে পারবে না`)
+          return
+        }
+        if (n > s.fullMarks) {
+          setError(`${s.name}: নম্বর পূর্ণমান ${s.fullMarks}-এর বেশি হতে পারবে না`)
+          return
+        }
         marks[s.name] = n
       }
     }
@@ -332,7 +340,7 @@ export default function ClassRoster() {
     const pct = (mark / s.fullMarks) * 100
     const low = pct < threshold
     return (
-      <span className={low ? 'text-red-600 font-semibold' : ''} title={`${pct.toFixed(1)}%`}>
+      <span className={low ? 'text-bd-red-600 font-semibold' : ''} title={`${pct.toFixed(1)}%`}>
         {mark}
       </span>
     )
@@ -344,7 +352,7 @@ export default function ClassRoster() {
 
   return (
     <section>
-      <h1 className="text-2xl font-bold text-maroon mb-4">শ্রেণি তালিকা</h1>
+      <h1 className="text-2xl font-heading font-bold text-bd-green-900 mb-4">শ্রেণি তালিকা</h1>
 
       {/* Class tabs */}
       <div className="flex flex-wrap gap-2 mb-4">
@@ -357,7 +365,7 @@ export default function ClassRoster() {
               setError('')
             }}
             className={`px-3 py-2 rounded-lg text-sm border ${
-              classId === c ? 'bg-maroon text-white border-maroon' : 'border-gray-300 text-gray-700'
+              classId === c ? 'tab-active' : 'tab-inactive'
             }`}
           >
             {CLASS_NAMES[c]}
@@ -371,18 +379,18 @@ export default function ClassRoster() {
         </p>
         <button
           onClick={openAdd}
-          className="rounded-lg bg-maroon text-white px-4 py-2 text-sm font-semibold"
+          className="btn-primary"
         >
           + নতুন শিক্ষার্থী
         </button>
       </div>
 
       {sorted.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-          <p className="text-gray-600">এই ক্লাসে এখনও কোনো শিক্ষার্থী যোগ করা হয়নি।</p>
+        <div className="glass-card-subtle p-8 text-center border-dashed">
+          <p className="text-gray-600 font-medium">এই ক্লাসে এখনও কোনো শিক্ষার্থী যোগ করা হয়নি।</p>
           <button
             onClick={openAdd}
-            className="mt-3 rounded-lg border border-maroon text-maroon px-4 py-2 text-sm font-semibold"
+            className="btn-secondary mt-3"
           >
             প্রথম শিক্ষার্থী যোগ করুন
           </button>
@@ -390,10 +398,10 @@ export default function ClassRoster() {
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block overflow-x-auto rounded-xl border border-gray-200 bg-white">
+          <div className="hidden md:block overflow-x-auto rounded-xl border border-bd-green-100 bg-white/80 shadow-soft">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="bg-maroon text-white">
+                <tr className="bg-gradient-to-r from-bd-green-800 to-bd-green-700 text-white">
                   <th className="px-3 py-2 text-left">রোল</th>
                   <th className="px-3 py-2 text-left">নাম</th>
                   <th className="px-3 py-2 text-center">মেধা</th>
@@ -418,7 +426,7 @@ export default function ClassRoster() {
                   const { gpa, grade } = lookupGpaAndGrade(avg, scaleRows)
                   const result = calculateResult(s, classConfig as ClassConfig, scaleRows)
                   return (
-                    <tr key={s.id} className="border-t border-gray-100 hover:bg-gray-50">
+                    <tr key={s.id} className="border-t border-bd-green-100 hover:bg-bd-green-50/40 transition-colors duration-150">
                       <td className="px-3 py-2 font-medium">{s.roll}</td>
                       <td className="px-3 py-2">{s.name}</td>
                       <td className="px-3 py-2 text-center">{ranks[s.id] ?? '—'}</td>
@@ -437,13 +445,13 @@ export default function ClassRoster() {
                       <td className="no-print px-3 py-2 text-right whitespace-nowrap">
                         <button
                           onClick={() => openEdit(s)}
-                          className="text-maroon text-xs font-semibold mr-2"
+                          className="text-bd-green-700 text-xs font-semibold mr-2 hover:text-bd-green-900 transition-colors duration-200"
                         >
                           সম্পাদনা
                         </button>
                         <button
                           onClick={() => handleDelete(s)}
-                          className="text-red-600 text-xs font-semibold"
+                          className="text-bd-red-600 text-xs font-semibold hover:text-bd-red-800 transition-colors duration-200"
                         >
                           মুছুন
                         </button>
@@ -463,10 +471,10 @@ export default function ClassRoster() {
               const { gpa, grade } = lookupGpaAndGrade(avg, scaleRows)
               const result = calculateResult(s, classConfig as ClassConfig, scaleRows)
               return (
-                <div key={s.id} className="bg-white rounded-xl border border-gray-200 p-4">
+                <div key={s.id} className="glass-card p-4 hover:shadow-soft-lg transition-all duration-200">
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="font-semibold">
+                      <div className="font-heading font-semibold">
                         রোল {s.roll} — {s.name}
                       </div>
                       <div className="text-xs text-gray-500 mt-0.5">
@@ -485,13 +493,13 @@ export default function ClassRoster() {
                         <div
                           key={sub.name}
                           className={`rounded-lg border px-1 py-2 ${
-                            low ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                            low ? 'border-bd-red-300 bg-bd-red-50' : 'border-bd-green-200 bg-bd-green-50/30'
                           }`}
                         >
                           <div className="text-[11px] text-gray-500 truncate">{sub.name}</div>
                           <div
-                            className={`text-base font-semibold ${
-                              m == null ? 'text-gray-400' : low ? 'text-red-600' : 'text-gray-900'
+                            className={`text-base font-heading font-bold ${
+                              m == null ? 'text-gray-400' : low ? 'text-bd-red-600' : 'text-gray-900'
                             }`}
                           >
                             {m == null ? '—' : m}
@@ -502,22 +510,22 @@ export default function ClassRoster() {
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-medium">
-                    <span>মোট: <span className="text-maroon">{total}</span></span>
-                    <span>গড়: <span className="text-maroon">{avg.toFixed(2)}%</span></span>
-                    <span>GPA: <span className="text-maroon">{gpa.toFixed(2)}</span></span>
-                    <span>গ্রেড: <span className="text-maroon">{grade}</span></span>
+                    <span>মোট: <span className="text-bd-green-700">{total}</span></span>
+                    <span>গড়: <span className="text-bd-green-700">{avg.toFixed(2)}%</span></span>
+                    <span>GPA: <span className="text-bd-green-700">{gpa.toFixed(2)}</span></span>
+                    <span>গ্রেড: <span className="text-bd-green-700">{grade}</span></span>
                   </div>
 
                   <div className="no-print mt-3 flex gap-2">
                     <button
                       onClick={() => openEdit(s)}
-                      className="flex-1 rounded-lg border border-maroon text-maroon py-2 text-sm font-semibold"
+                      className="flex-1 rounded-lg border border-bd-green-700 text-bd-green-700 py-2.5 text-sm font-semibold hover:bg-bd-green-50 transition-all duration-200"
                     >
                       সম্পাদনা
                     </button>
                     <button
                       onClick={() => handleDelete(s)}
-                      className="flex-1 rounded-lg border border-red-300 text-red-600 py-2 text-sm font-semibold"
+                      className="flex-1 rounded-lg border border-bd-red-300 text-bd-red-700 py-2.5 text-sm font-semibold hover:bg-bd-red-50 transition-all duration-200"
                     >
                       মুছুন
                     </button>

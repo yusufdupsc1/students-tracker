@@ -8,3 +8,8 @@ dist-ssr
 
 # Playwright MCP scratch
 .playwright-mcp/
+
+# AI / tooling artifacts
+audit/
+.kilo/
+.kilocode/

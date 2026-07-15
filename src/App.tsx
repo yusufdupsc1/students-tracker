@@ -5,6 +5,7 @@ import Layout from './components/Layout'
 import PageLoader from './components/PageLoader'
 import ErrorBoundary from './components/ErrorBoundary'
 import { db } from './db/schema'
+import { startFaviconAnimation } from './lib/faviconAnimator'
 
 // Every route is code-split so the initial bundle is tiny; the recharts-heavy
 // Dashboard chunk and the xlsx Import chunk load on demand.
@@ -32,6 +33,10 @@ export default function App() {
     const name = school?.name || 'বেজখণ্ড সঃ প্রাঃ বিদ্যালয়'
     document.title = name
   }, [school])
+
+  useEffect(() => {
+    startFaviconAnimation()
+  }, [])
 
   return (
     <ErrorBoundary>

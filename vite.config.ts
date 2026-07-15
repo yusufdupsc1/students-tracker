@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/*', 'fonts/*', 'favicon.ico'],
+      includeAssets: ['icons/*', 'fonts/*', 'favicon.ico', 'favicon.svg'],
       manifest: {
         name: 'Bejkhonda School',
         short_name: 'বেজখণ্ড',
@@ -19,6 +19,7 @@ export default defineConfig({
         start_url: '.',
         scope: '.',
         icons: [
+          { src: 'favicon.svg', sizes: 'any', type: 'image/svg+xml' },
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
           { src: 'icons/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }

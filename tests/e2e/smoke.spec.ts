@@ -36,7 +36,8 @@ test.describe('Application smoke tests', () => {
     const protectedRoutes = ['/roster', '/report-card', '/mtr', '/search', '/settings']
     for (const route of protectedRoutes) {
       await page.goto(route)
-      await page.waitForURL('**/login')
+      // Wait for auth timeout (3s) + client-side redirect to complete
+      await page.waitForTimeout(4000)
       expect(page.url()).toContain('/login')
     }
   })

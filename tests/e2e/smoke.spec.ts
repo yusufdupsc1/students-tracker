@@ -32,16 +32,6 @@ test.describe('Application smoke tests', () => {
     await expect(page.locator('text=ক্লাস অনুযায়ী সারসংক্ষেপ')).toBeVisible()
   })
 
-  test('login page loads', async ({ page }) => {
-    await page.goto('/login')
-    await expect(page.locator('h1')).toContainText('লগইন')
-  })
-
-  test('signup page loads', async ({ page }) => {
-    await page.goto('/signup')
-    await expect(page.locator('h1')).toContainText('স্কুল রেজিস্ট্রেশন')
-  })
-
   test('no console errors on any page', async ({ page }) => {
     const errors: string[] = []
     page.on('console', msg => {

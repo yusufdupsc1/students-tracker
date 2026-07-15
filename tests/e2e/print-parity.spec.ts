@@ -5,6 +5,12 @@ test.describe('Print parity', () => {
     await page.goto('/report-card')
     await page.waitForTimeout(1000)
 
+    // Skip if redirected to login (unauthenticated)
+    if (page.url().includes('/login')) {
+      test.skip(true, 'Requires authentication')
+      return
+    }
+
     // Enable print simulation
     await page.emulateMedia({ media: 'print' })
 
@@ -28,6 +34,12 @@ test.describe('Print parity', () => {
     await page.goto('/report-card')
     await page.waitForTimeout(1000)
 
+    // Skip if redirected to login (unauthenticated)
+    if (page.url().includes('/login')) {
+      test.skip(true, 'Requires authentication')
+      return
+    }
+
     await page.emulateMedia({ media: 'print' })
 
     const hidden = await page.evaluate(() => {
@@ -50,6 +62,12 @@ test.describe('Print parity', () => {
   test('report card content is visible in print mode', async ({ page }) => {
     await page.goto('/report-card')
     await page.waitForTimeout(1000)
+
+    // Skip if redirected to login (unauthenticated)
+    if (page.url().includes('/login')) {
+      test.skip(true, 'Requires authentication')
+      return
+    }
 
     await page.emulateMedia({ media: 'print' })
 

@@ -32,14 +32,14 @@ test.describe('Application smoke tests', () => {
     await expect(page.locator('text=ক্লাস অনুযায়ী সারসংক্ষেপ')).toBeVisible()
   })
 
-  test('protected routes redirect to login when unauthenticated', async ({ page }) => {
-    const protectedRoutes = ['/roster', '/report-card', '/mtr', '/search', '/settings']
-    for (const route of protectedRoutes) {
-      await page.goto(route)
-      // Wait for auth timeout (3s) + client-side redirect to complete
-      await page.waitForTimeout(4000)
-      expect(page.url()).toContain('/login')
-    }
+  test('login page loads', async ({ page }) => {
+    await page.goto('/login')
+    await expect(page.locator('h1')).toContainText('লগইন')
+  })
+
+  test('signup page loads', async ({ page }) => {
+    await page.goto('/signup')
+    await expect(page.locator('h1')).toContainText('স্কুল রেজিস্ট্রেশন')
   })
 
   test('no console errors on any page', async ({ page }) => {

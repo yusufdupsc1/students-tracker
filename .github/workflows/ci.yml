@@ -33,9 +33,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - uses: microsoft/playwright-github-action@v1
-        with:
-          browser: chromium
+      - run: npx playwright install --with-deps chromium
       - run: npm run preview &
       - run: npx playwright test
 

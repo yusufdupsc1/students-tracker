@@ -3,9 +3,6 @@ import { supabase } from '../lib/supabase'
 import type { User } from '@supabase/supabase-js'
 import type { School, UserProfile } from '../lib/database.types'
 
-console.log('[Auth] Supabase URL:', (supabase as any)?.supabaseUrl || 'not set')
-console.log('[Auth] Supabase key present:', !!((supabase as any)?.supabaseKey || (supabase as any)?.auth?.options?.authKey))
-
 interface AuthContextType {
   user: User | null
   profile: (UserProfile & { school: School }) | null

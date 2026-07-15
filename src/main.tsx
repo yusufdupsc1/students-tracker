@@ -37,9 +37,8 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('Unhandled promise rejection:', event.reason)
 })
 
-// Temporarily disabled for debugging: re-enable after confirming app loads
-// if ('serviceWorker' in navigator) {
-//   import('virtual:pwa-register')
-//     .then(({ registerSW }) => registerSW({ immediate: true }))
-//     .catch(() => {})
-// }
+if ('serviceWorker' in navigator) {
+  import('virtual:pwa-register')
+    .then(({ registerSW }) => registerSW({ immediate: true }))
+    .catch(() => {})
+}

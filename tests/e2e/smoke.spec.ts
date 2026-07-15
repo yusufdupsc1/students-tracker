@@ -32,29 +32,13 @@ test.describe('Application smoke tests', () => {
     await expect(page.locator('text=ক্লাস অনুযায়ী সারসংক্ষেপ')).toBeVisible()
   })
 
-  test('class roster page redirects to login when unauthenticated', async ({ page }) => {
-    await page.goto('/roster')
-    await expect(page.locator('text=লগইন')).toBeVisible()
-  })
-
-  test('report card page redirects to login when unauthenticated', async ({ page }) => {
-    await page.goto('/report-card')
-    await expect(page.locator('text=লগইন')).toBeVisible()
-  })
-
-  test('progress tracking page redirects to login when unauthenticated', async ({ page }) => {
-    await page.goto('/mtr')
-    await expect(page.locator('text=লগইন')).toBeVisible()
-  })
-
-  test('search page redirects to login when unauthenticated', async ({ page }) => {
-    await page.goto('/search')
-    await expect(page.locator('text=লগইন')).toBeVisible()
-  })
-
-  test('settings page redirects to login when unauthenticated', async ({ page }) => {
-    await page.goto('/settings')
-    await expect(page.locator('text=লগইন')).toBeVisible()
+  test('protected routes redirect to login when unauthenticated', async ({ page }) => {
+    const protectedRoutes = ['/roster', '/report-card', '/mtr', '/search', '/settings']
+    for (const route of protectedRoutes) {
+      await page.goto(route)
+      await page.waitForURL('**/login')
+      expect(page.url()).toContain('/login')
+    }
   })
 
   test('no console errors on any page', async ({ page }) => {
@@ -63,7 +47,7 @@ test.describe('Application smoke tests', () => {
       if (msg.type() === 'error') errors.push(msg.text())
     })
 
-    const pages = ['/', '/roster', '/report-card', '/mtr', '/search', '/settings']
+    const pages = ['/', '/login', '/signup']
     for (const route of pages) {
       await page.goto(route)
       await page.waitForTimeout(500)

@@ -12,6 +12,7 @@ export default defineConfig({
         name: 'Bejkhonda School',
         short_name: 'বেজখণ্ড',
         description: 'Offline student result, MTR and QR tracking for Bejkhonda School',
+        version: '2.0.0',
         theme_color: '#811B22',
         background_color: '#ffffff',
         display: 'standalone',
@@ -27,7 +28,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,woff2,woff,ttf,png,svg,ico}'],
-        navigateFallback: 'index.html'
+        navigateFallback: 'index.html',
+        skipWaiting: true,
+        clientsClaim: true
       },
       devOptions: {
         enabled: false

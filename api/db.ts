@@ -12,12 +12,12 @@ export default async function handler(req: Request) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
     }
 
-    if (!req.body) {
-      return new Response(JSON.stringify({ error: 'No body' }), { status: 400 })
-    }
-
     try {
       const body = await req.text()
+      if (!body) {
+        return new Response(JSON.stringify({ error: 'No body' }), { status: 400 })
+      }
+
       const blob = await put('students-tracker/db.json', body, {
         access: 'public',
         contentType: 'application/json'

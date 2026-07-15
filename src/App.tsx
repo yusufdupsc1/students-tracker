@@ -1,8 +1,10 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 import Layout from './components/Layout'
 import PageLoader from './components/PageLoader'
 import ErrorBoundary from './components/ErrorBoundary'
+import { db } from './db/schema'
 
 // Every route is code-split so the initial bundle is tiny; the recharts-heavy
 // Dashboard chunk and the xlsx Import chunk load on demand.
@@ -24,6 +26,13 @@ function lazyPage(node: React.ReactNode) {
 }
 
 export default function App() {
+  const school = useLiveQuery(() => db.school.get('school'))
+
+  useEffect(() => {
+    const name = school?.name || 'বেজখণ্ড সঃ প্রাঃ বিদ্যালয়'
+    document.title = name
+  }, [school])
+
   return (
     <ErrorBoundary>
       <Routes>

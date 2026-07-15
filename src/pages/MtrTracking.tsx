@@ -53,7 +53,7 @@ function TriState({
           type="button"
           title={o.v === 'unassessed' ? 'মূল্যায়ন হয়নি' : o.v === 'yes' ? 'সক্ষম' : 'অক্ষম'}
           onClick={() => onChange(o.v)}
-          className={`px-4 py-2 text-sm min-w-[48px] transition-all duration-200 ${
+          className={`px-3 py-1.5 text-xs sm:text-sm min-w-[40px] sm:min-w-[48px] transition-all duration-200 ${
             value === o.v ? o.active : 'bg-transparent text-gray-500 hover:bg-bd-green-50'
           }`}
         >
@@ -220,7 +220,7 @@ export default function MTRTracking() {
                   রোল {s.roll} — {s.name}
                 </div>
                 {SKILLS.map((sk) => (
-                  <div key={sk.key} className="flex items-center justify-between mt-3">
+                  <div key={sk.key} className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-3 gap-2 sm:gap-3">
                     <span className="text-sm text-gray-600 font-medium">{sk.label}</span>
                     <TriState
                       value={rec[sk.key]}

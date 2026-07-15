@@ -37,8 +37,16 @@ export async function downloadRemote(): Promise<unknown> {
   const res = await fetch(`${API_URL}?action=download`, {
     headers: { 'Accept': 'application/json' }
   })
-  if (!res.ok) throw new Error(`Remote download failed: ${res.status}`)
-  return res.json()
+  if (!res.ok) {
+    if (res.status === 404) throw new Error('Remote database not found. Push data first.')
+    throw new Error(`Remote download failed: ${res.status}`)
+  }
+  const text = await res.text()
+  try {
+    return JSON.parse(text)
+  } catch {
+    throw new Error('Remote data is corrupted')
+  }
 }
 
 export async function uploadRemote(data: unknown): Promise<void> {
@@ -51,7 +59,10 @@ export async function uploadRemote(data: unknown): Promise<void> {
     },
     body: json
   })
-  if (!res.ok) throw new Error(`Remote upload failed: ${res.status}`)
+  if (!res.ok) {
+    const errText = await res.text().catch(() => 'Unknown error')
+    throw new Error(`Remote upload failed: ${res.status} — ${errText}`)
+  }
 }
 
 export async function resetRemote(): Promise<void> {
@@ -70,7 +81,7 @@ export async function syncFromRemote(): Promise<{ imported: boolean; records: nu
 
   if (meta.lastSyncAt > 0 && meta.lastRemoteModified > 0) {
     const localAge = Date.now() - meta.lastSyncAt
-    if (localAge < 60_000) {
+    if (localAge < 10_000) {
       return { imported: false, records: 0 }
     }
   }
@@ -80,7 +91,10 @@ export async function syncFromRemote(): Promise<{ imported: boolean; records: nu
     throw new Error('Remote data invalid')
   }
 
-  const db = (await import('../db/schema')).db
+  const { db } = await import('../db/schema')
+  const { captureSnapshot } = await import('../db/snapshots')
+
+  await captureSnapshot('রিমোট সিঙ্কের পূর্বে')
 
   await db.transaction('rw', db.school, db.gradingScale, db.classes, db.students, db.mtrRecords, async () => {
     await db.school.clear()
@@ -110,6 +124,8 @@ export async function syncFromRemote(): Promise<{ imported: boolean; records: nu
 
 export async function syncToRemote(): Promise<void> {
   const { db } = await import('../db/schema')
+  const { captureSnapshot } = await import('../db/snapshots')
+
   const [school, gradingScale, classes, students, mtrRecords] = await Promise.all([
     db.school.get('school'),
     db.gradingScale.toArray(),
@@ -117,6 +133,12 @@ export async function syncToRemote(): Promise<void> {
     db.students.toArray(),
     db.mtrRecords.toArray()
   ])
+
+  if (!school || classes.length === 0 || students.length === 0) {
+    throw new Error('No local data to sync')
+  }
+
+  await captureSnapshot('রিমোট সিঙ্কের পূর্বে')
 
   const payload = {
     exportedAt: new Date().toISOString(),

@@ -9,10 +9,10 @@ import { seedDatabase } from './db/seed'
 import { requestPersistentStorage } from './lib/persistence'
 
 // Seed the database on first load (only seeds when empty).
-void seedDatabase()
+seedDatabase().catch(console.error)
 
 // Best-effort: ask the browser to keep our IndexedDB under storage pressure.
-void requestPersistentStorage()
+requestPersistentStorage().catch(console.error)
 
 const root = document.getElementById('root')
 if (root) {
@@ -25,7 +25,17 @@ if (root) {
       </BrowserRouter>
     </React.StrictMode>
   )
+} else {
+  console.error('Root element not found')
 }
+
+window.addEventListener('error', (event) => {
+  console.error('Global error:', event.error)
+})
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason)
+})
 
 // Temporarily disabled for debugging: re-enable after confirming app loads
 // if ('serviceWorker' in navigator) {

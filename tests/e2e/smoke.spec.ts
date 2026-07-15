@@ -32,29 +32,29 @@ test.describe('Application smoke tests', () => {
     await expect(page.locator('text=ক্লাস অনুযায়ী সারসংক্ষেপ')).toBeVisible()
   })
 
-  test('class roster page loads', async ({ page }) => {
+  test('class roster page redirects to login when unauthenticated', async ({ page }) => {
     await page.goto('/roster')
-    await expect(page.locator('h1')).toContainText('শ্রেণি তালিকা')
+    await expect(page.locator('text=লগইন')).toBeVisible()
   })
 
-  test('report card page loads', async ({ page }) => {
+  test('report card page redirects to login when unauthenticated', async ({ page }) => {
     await page.goto('/report-card')
-    await expect(page.locator('h1')).toContainText('ফলাফল কার্ড')
+    await expect(page.locator('text=লগইন')).toBeVisible()
   })
 
-  test('progress tracking page loads', async ({ page }) => {
+  test('progress tracking page redirects to login when unauthenticated', async ({ page }) => {
     await page.goto('/mtr')
-    await expect(page.locator('h1')).toContainText('Progress ট্র্যাকিং')
+    await expect(page.locator('text=লগইন')).toBeVisible()
   })
 
-  test('search page loads', async ({ page }) => {
+  test('search page redirects to login when unauthenticated', async ({ page }) => {
     await page.goto('/search')
-    await expect(page.locator('text=শিক্ষার্থী অনুসন্ধান')).toBeVisible()
+    await expect(page.locator('text=লগইন')).toBeVisible()
   })
 
-  test('settings page loads', async ({ page }) => {
+  test('settings page redirects to login when unauthenticated', async ({ page }) => {
     await page.goto('/settings')
-    await expect(page.locator('h1')).toContainText('সেটিংস')
+    await expect(page.locator('text=লগইন')).toBeVisible()
   })
 
   test('no console errors on any page', async ({ page }) => {

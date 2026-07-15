@@ -3,13 +3,13 @@ import { seedRealData } from './seedReal'
 import type { School, GradingScaleRow, ClassConfig, SubjectSlot } from '../types'
 
 export const DEFAULT_GRADING_SCALE: GradingScaleRow[] = [
-  { minPercent: 0, gpa: 0, grade: 'F', remark: 'উন্নতির জন্য বিশেষ যত্ন প্রয়োজন' },
-  { minPercent: 33, gpa: 1, grade: 'D', remark: 'আরও অনুশীলন প্রয়োজন' },
-  { minPercent: 40, gpa: 2, grade: 'C', remark: 'সন্তোষজনক' },
-  { minPercent: 50, gpa: 3, grade: 'B', remark: 'ভালো' },
-  { minPercent: 60, gpa: 3.5, grade: 'A-', remark: 'খুব ভালো' },
-  { minPercent: 70, gpa: 4, grade: 'A', remark: 'চমৎকার' },
-  { minPercent: 80, gpa: 5, grade: 'A+', remark: 'অসাধারণ' }
+  { schoolId: 'school', minPercent: 0, gpa: 0, grade: 'F', remark: 'উন্নতির জন্য বিশেষ যত্ন প্রয়োজন' },
+  { schoolId: 'school', minPercent: 33, gpa: 1, grade: 'D', remark: 'আরও অনুশীলন প্রয়োজন' },
+  { schoolId: 'school', minPercent: 40, gpa: 2, grade: 'C', remark: 'সন্তোষজনক' },
+  { schoolId: 'school', minPercent: 50, gpa: 3, grade: 'B', remark: 'ভালো' },
+  { schoolId: 'school', minPercent: 60, gpa: 3.5, grade: 'A-', remark: 'খুব ভালো' },
+  { schoolId: 'school', minPercent: 70, gpa: 4, grade: 'A', remark: 'চমৎকার' },
+  { schoolId: 'school', minPercent: 80, gpa: 5, grade: 'A+', remark: 'অসাধারণ' }
 ]
 
 function slug(name: string) {
@@ -31,11 +31,11 @@ const SUBJECTS_6 = [
 ]
 
 export const DEFAULT_CLASSES: ClassConfig[] = [
-  { id: 1, name: 'প্রথম', subjects: subjects(SUBJECTS_3, 50) },
-  { id: 2, name: 'দ্বিতীয়', subjects: subjects(SUBJECTS_3, 50) },
-  { id: 3, name: 'তৃতীয়', subjects: subjects(SUBJECTS_6, 70) },
-  { id: 4, name: 'চতুর্থ', subjects: subjects(SUBJECTS_6, 70) },
-  { id: 5, name: 'পঞ্চম', subjects: subjects(SUBJECTS_6, 70) }
+  { schoolId: 'school', id: 1, name: 'প্রথম', subjects: subjects(SUBJECTS_3, 50) },
+  { schoolId: 'school', id: 2, name: 'দ্বিতীয়', subjects: subjects(SUBJECTS_3, 50) },
+  { schoolId: 'school', id: 3, name: 'তৃতীয়', subjects: subjects(SUBJECTS_6, 70) },
+  { schoolId: 'school', id: 4, name: 'চতুর্থ', subjects: subjects(SUBJECTS_6, 70) },
+  { schoolId: 'school', id: 5, name: 'পঞ্চম', subjects: subjects(SUBJECTS_6, 70) }
 ]
 
 export const DEFAULT_SCHOOL: School = {

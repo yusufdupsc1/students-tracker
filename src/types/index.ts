@@ -1,6 +1,7 @@
 // Domain types — mirror the spreadsheet model exactly (see .kilocode/rules/project-context.md).
 
 export interface GradingScaleRow {
+  schoolId?: string
   minPercent: number
   gpa: number
   grade: string
@@ -16,6 +17,7 @@ export interface SubjectSlot {
 }
 
 export interface ClassConfig {
+  schoolId?: string
   /** 1..5 */
   id: number
   /** Bengali class name, e.g. প্রথম */
@@ -25,8 +27,8 @@ export interface ClassConfig {
 }
 
 export interface School {
-  /** Single row, always 'school'. */
-  id: 'school'
+  /** UUID from Supabase Auth. */
+  id: string
   name: string
   village: string
   postOffice: string
@@ -35,6 +37,7 @@ export interface School {
 }
 
 export interface Student {
+  schoolId?: string
   /** `${classId}_${roll}` — stable composite id. */
   id: string
   classId: number
@@ -52,6 +55,7 @@ export interface Student {
 export type MTRSkillStatus = 'yes' | 'no' | 'unassessed'
 
 export interface MTRRecord {
+  schoolId?: string
   /** `${classId}_${roll}` — one competency record per student. */
   id: string
   studentId: string

@@ -4,8 +4,12 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import Layout from './components/Layout'
 import PageLoader from './components/PageLoader'
 import ErrorBoundary from './components/ErrorBoundary'
+import { ProtectedRoute } from './components/ProtectedRoute'
 import { db } from './db/schema'
 import { startFaviconAnimation } from './lib/faviconAnimator'
+import Landing from './pages/Landing'
+import Login from './pages/Login'
+import Signup from './pages/Signup'
 
 // Every route is code-split so the initial bundle is tiny; the recharts-heavy
 // Dashboard chunk and the xlsx Import chunk load on demand.
@@ -41,7 +45,13 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Routes>
-        <Route element={<Layout />}>
+        {/* Public routes */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+
+        {/* Protected routes */}
+        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={lazyPage(<Dashboard />)} />
           <Route path="roster" element={lazyPage(<ClassRoster />)} />
           <Route path="report-card" element={lazyPage(<ReportCard />)} />
@@ -50,8 +60,8 @@ export default function App() {
           <Route path="import" element={lazyPage(<Import />)} />
           <Route path="settings" element={lazyPage(<Settings />)} />
           <Route path="qr-ids" element={lazyPage(<QrIds />)} />
-          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </ErrorBoundary>
   )

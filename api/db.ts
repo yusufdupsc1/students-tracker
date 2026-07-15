@@ -5,6 +5,7 @@ export const runtime = 'nodejs'
 export default async function handler(req: Request) {
   const url = new URL(req.url)
   const action = url.searchParams.get('action') || 'download'
+  const path = url.searchParams.get('path') || 'db.json'
   const token = req.headers.get('x-admin-token')
 
   if (action === 'upload') {
@@ -18,7 +19,7 @@ export default async function handler(req: Request) {
         return new Response(JSON.stringify({ error: 'No body' }), { status: 400 })
       }
 
-      const blob = await put('students-tracker/db.json', body, {
+      const blob = await put(path, body, {
         access: 'public',
         contentType: 'application/json'
       })
@@ -34,8 +35,8 @@ export default async function handler(req: Request) {
 
   if (action === 'download') {
     try {
-      const blobs = await list({ prefix: 'students-tracker/' })
-      const dbBlob = blobs.blobs.find(b => b.pathname === 'students-tracker/db.json')
+      const blobs = await list({ prefix: path })
+      const dbBlob = blobs.blobs.find(b => b.pathname === path)
 
       if (!dbBlob) {
         return new Response(JSON.stringify({ error: 'No database found' }), { status: 404 })
@@ -59,7 +60,7 @@ export default async function handler(req: Request) {
     }
 
     try {
-      const blobs = await list({ prefix: 'students-tracker/' })
+      const blobs = await list({ prefix: path })
       await Promise.all(blobs.blobs.map(b => del(b.url)))
       return new Response(JSON.stringify({ success: true }), {
         status: 200,

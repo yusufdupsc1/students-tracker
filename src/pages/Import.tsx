@@ -7,6 +7,7 @@ import { syncFromRemote, syncToRemote, resetRemote } from '../lib/remoteSync'
 import { db } from '../db/schema'
 import { captureSnapshot, restoreSnapshot } from '../db/snapshots'
 import { storageStatus } from '../lib/persistence'
+import { useAuth } from '../contexts/AuthContext'
 
 const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
 
@@ -43,6 +44,8 @@ export default function Import() {
     [],
     [] as { id?: number; createdAt: string; reason: string }[]
   )
+
+  const { profile } = useAuth()
 
   useEffect(() => {
     void storageStatus().then(setStorage)
@@ -182,7 +185,8 @@ export default function Import() {
     setRemoteError('')
     setRemoteDone('')
     try {
-      const result = await syncFromRemote()
+      const schoolId = profile?.school?.id
+      const result = await syncFromRemote(schoolId)
       setRemoteDone(`রিমোট ডেটা ইমপোর্ট হয়েছে (${result.records} জন শিক্ষার্থী)`)
     } catch {
       setRemoteError('রিমোট ডেটা আনতে সমস্যা হয়েছে।')
@@ -196,7 +200,8 @@ export default function Import() {
     setRemoteError('')
     setRemoteDone('')
     try {
-      await syncToRemote()
+      const schoolId = profile?.school?.id
+      await syncToRemote(schoolId)
       setRemoteDone('ডেটা রিমোটে সংরক্ষিত হয়েছে।')
     } catch {
       setRemoteError('রিমোটে সংরক্ষণে সমস্যা হয়েছে।')
@@ -211,7 +216,8 @@ export default function Import() {
     setRemoteError('')
     setRemoteDone('')
     try {
-      await resetRemote()
+      const schoolId = profile?.school?.id
+      await resetRemote(schoolId)
       setRemoteDone('রিমোট ডাটাবেস রিসেট করা হয়েছে।')
     } catch {
       setRemoteError('রিমোট রিসেটে সমস্যা হয়েছে।')

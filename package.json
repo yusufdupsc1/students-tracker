@@ -21,6 +21,7 @@
     "test:print": "playwright test tests/e2e/print-parity.spec.ts"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.110.5",
     "@vercel/blob": "^1.1.1",
     "dexie": "^4.0.8",
     "dexie-react-hooks": "^1.1.7",

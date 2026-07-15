@@ -7,10 +7,11 @@ const MAX_SNAPSHOTS = 5
 export async function captureSnapshot(reason: string): Promise<void> {
   const backup = await buildBackup()
   await db.snapshots.add({
+    schoolId: backup.school?.id,
     createdAt: new Date().toISOString(),
     reason,
     json: JSON.stringify(backup)
-  })
+  } as any)
   const all = await db.snapshots.orderBy('createdAt').toArray()
   if (all.length > MAX_SNAPSHOTS) {
     const excess = all.slice(0, all.length - MAX_SNAPSHOTS)

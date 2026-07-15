@@ -3,6 +3,7 @@ import type { School, GradingScaleRow, ClassConfig, Student, MTRRecord } from '.
 
 export interface Snapshot {
   id?: number
+  schoolId?: string
   createdAt: string // ISO timestamp
   reason: string // Bengali label shown in UI
   json: string // serialized Backup
@@ -39,6 +40,15 @@ export class AppDB extends Dexie {
       students: 'id, classId, roll, &[classId+roll]',
       mtrRecords: 'id, classId, studentId',
       snapshots: '++id, createdAt'
+    })
+    // Multi-tenancy: add schoolId to all tables for SaaS isolation.
+    this.version(3).stores({
+      school: 'id',
+      gradingScale: 'schoolId, minPercent',
+      classes: 'schoolId, id',
+      students: 'schoolId, id, classId, roll, &[classId+roll]',
+      mtrRecords: 'schoolId, id, classId, studentId',
+      snapshots: 'schoolId, ++id, createdAt'
     })
   }
 }

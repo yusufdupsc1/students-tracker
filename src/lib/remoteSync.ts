@@ -18,6 +18,7 @@ const STORAGE_KEY = 'bejkhonda-remote-sync-meta'
 interface SyncMeta {
   lastSyncAt: number
   lastRemoteModified: number
+  schoolId?: string
 }
 
 function getMeta(): SyncMeta {
@@ -33,8 +34,9 @@ function setMeta(meta: SyncMeta) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(meta))
 }
 
-export async function downloadRemote(): Promise<unknown> {
-  const res = await fetch(`${API_URL}?action=download`, {
+export async function downloadRemote(schoolId?: string): Promise<unknown> {
+  const path = schoolId ? `schools/${schoolId}/db.json` : 'db.json'
+  const res = await fetch(`${API_URL}?action=download&path=${encodeURIComponent(path)}`, {
     headers: { 'Accept': 'application/json' }
   })
   if (!res.ok) {
@@ -49,9 +51,10 @@ export async function downloadRemote(): Promise<unknown> {
   }
 }
 
-export async function uploadRemote(data: unknown): Promise<void> {
+export async function uploadRemote(data: unknown, schoolId?: string): Promise<void> {
+  const path = schoolId ? `schools/${schoolId}/db.json` : 'db.json'
   const json = JSON.stringify(data, null, 2)
-  const res = await fetch(`${API_URL}?action=upload`, {
+  const res = await fetch(`${API_URL}?action=upload&path=${encodeURIComponent(path)}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -65,8 +68,9 @@ export async function uploadRemote(data: unknown): Promise<void> {
   }
 }
 
-export async function resetRemote(): Promise<void> {
-  const res = await fetch(`${API_URL}?action=reset`, {
+export async function resetRemote(schoolId?: string): Promise<void> {
+  const path = schoolId ? `schools/${schoolId}/` : ''
+  const res = await fetch(`${API_URL}?action=reset&path=${encodeURIComponent(path)}`, {
     method: 'POST',
     headers: {
       'x-admin-token': String(import.meta.env.VITE_ADMIN_TOKEN || '')
@@ -75,8 +79,8 @@ export async function resetRemote(): Promise<void> {
   if (!res.ok) throw new Error(`Remote reset failed: ${res.status}`)
 }
 
-export async function syncFromRemote(): Promise<{ imported: boolean; records: number }> {
-  const data = await downloadRemote()
+export async function syncFromRemote(schoolId?: string): Promise<{ imported: boolean; records: number }> {
+  const data = await downloadRemote(schoolId)
   const meta = getMeta()
 
   if (meta.lastSyncAt > 0 && meta.lastRemoteModified > 0) {
@@ -113,7 +117,8 @@ export async function syncFromRemote(): Promise<{ imported: boolean; records: nu
 
   setMeta({
     lastSyncAt: Date.now(),
-    lastRemoteModified: Date.now()
+    lastRemoteModified: Date.now(),
+    schoolId
   })
 
   return {
@@ -122,7 +127,7 @@ export async function syncFromRemote(): Promise<{ imported: boolean; records: nu
   }
 }
 
-export async function syncToRemote(): Promise<void> {
+export async function syncToRemote(schoolId?: string): Promise<void> {
   const { db } = await import('../db/schema')
   const { captureSnapshot } = await import('../db/snapshots')
 
@@ -149,10 +154,11 @@ export async function syncToRemote(): Promise<void> {
     mtrRecords
   }
 
-  await uploadRemote(payload)
+  await uploadRemote(payload, schoolId)
 
   setMeta({
     lastSyncAt: Date.now(),
-    lastRemoteModified: Date.now()
+    lastRemoteModified: Date.now(),
+    schoolId
   })
 }

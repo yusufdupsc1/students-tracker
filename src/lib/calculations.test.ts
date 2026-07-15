@@ -11,11 +11,11 @@ import {
 import type { Student, ClassConfig, GradingScaleRow } from '../types'
 
 const SCALE: GradingScaleRow[] = [
-  { minPercent: 0, gpa: 0, grade: 'F', remark: 'উন্নতির জন্য' },
-  { minPercent: 33, gpa: 1, grade: 'D', remark: 'আরও অনুশীলন' },
-  { minPercent: 40, gpa: 2, grade: 'C', remark: 'সন্তোষজনক' },
-  { minPercent: 50, gpa: 3, grade: 'B', remark: 'ভালো' },
-  { minPercent: 80, gpa: 5, grade: 'A+', remark: 'অসাধারণ' }
+  { schoolId: 'test', minPercent: 0, gpa: 0, grade: 'F', remark: 'উন্নতির জন্য' },
+  { schoolId: 'test', minPercent: 33, gpa: 1, grade: 'D', remark: 'আরও অনুশীলন' },
+  { schoolId: 'test', minPercent: 40, gpa: 2, grade: 'C', remark: 'সন্তোষজনক' },
+  { schoolId: 'test', minPercent: 50, gpa: 3, grade: 'B', remark: 'ভালো' },
+  { schoolId: 'test', minPercent: 80, gpa: 5, grade: 'A+', remark: 'অসাধারণ' }
 ]
 
 function subject(id: string, name: string, fullMarks: number) {
@@ -23,11 +23,11 @@ function subject(id: string, name: string, fullMarks: number) {
 }
 
 function classConfig(subjects: { name: string; fullMarks: number }[]): ClassConfig {
-  return { id: 1, name: 'প্রথম', subjects: subjects.map((s) => subject(s.name, s.name, s.fullMarks)) }
+  return { schoolId: 'test', id: 1, name: 'প্রথম', subjects: subjects.map((s) => subject(s.name, s.name, s.fullMarks)) }
 }
 
 function student(roll: number, marks: Record<string, number | null>): Student {
-  return { id: `1_${roll}`, classId: 1, roll, name: `S${roll}`, marks }
+  return { schoolId: 'test', id: `1_${roll}`, classId: 1, roll, name: `S${roll}`, marks }
 }
 
 describe('getActiveSubjects', () => {
@@ -89,7 +89,7 @@ describe('passThreshold', () => {
     expect(passThreshold(SCALE)).toBe(33)
   })
   it('falls back to 33 only when the scale has no non-F row', () => {
-    expect(passThreshold([{ minPercent: 0, gpa: 0, grade: 'F', remark: '' }])).toBe(33)
+    expect(passThreshold([{ schoolId: 'test', minPercent: 0, gpa: 0, grade: 'F', remark: '' }])).toBe(33)
   })
 })
 

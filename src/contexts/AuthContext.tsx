@@ -22,11 +22,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log('[Auth] Initializing auth...')
     const timeout = setTimeout(() => {
-      console.warn('[Auth] getSession timed out after 8s')
+      console.warn('[Auth] getSession timed out after 3s')
       setUser(null)
       setProfile(null)
       setLoading(false)
-    }, 8000)
+    }, 3000)
 
     supabase.auth.getSession()
       .then(({ data: { session } }) => {

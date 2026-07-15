@@ -34,7 +34,7 @@ export default async function handler(req: Request) {
 
   if (action === 'download') {
     try {
-      const blobs = await list('students-tracker/')
+      const blobs = await list({ prefix: 'students-tracker/' })
       const dbBlob = blobs.blobs.find(b => b.pathname === 'students-tracker/db.json')
 
       if (!dbBlob) {
@@ -59,7 +59,7 @@ export default async function handler(req: Request) {
     }
 
     try {
-      const blobs = await list('students-tracker/')
+      const blobs = await list({ prefix: 'students-tracker/' })
       await Promise.all(blobs.blobs.map(b => del(b.url)))
       return new Response(JSON.stringify({ success: true }), {
         status: 200,

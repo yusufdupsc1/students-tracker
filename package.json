@@ -21,6 +21,7 @@
     "test:print": "playwright test tests/e2e/print-parity.spec.ts"
   },
   "dependencies": {
+    "@vercel/blob": "^1.1.1",
     "dexie": "^4.0.8",
     "dexie-react-hooks": "^1.1.7",
     "qrcode": "^1.5.4",
@@ -35,6 +36,7 @@
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
+    "@vercel/node": "^5.8.24",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.45",

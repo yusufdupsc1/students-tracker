@@ -8,6 +8,7 @@ import {
   calculateResult,
   calculateMeritRank
 } from '../lib/calculations'
+import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, MTRRecord, MTRSkillStatus } from '../types'
 
 const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
@@ -59,12 +60,22 @@ function normalize(s: string) {
 }
 
 export default function StudentSearch() {
+  const { profile } = useAuth()
+  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [query, setQuery] = useState('')
 
-  const students = useLiveQuery(() => db.students.toArray())
-  const classes = useLiveQuery(() => db.classes.toArray())
-  const scale = useLiveQuery(() => db.gradingScale.toArray())
-  const mtrAll = useLiveQuery(() => db.mtrRecords.toArray())
+  const students = useLiveQuery(
+    () => schoolId ? db.students.where('schoolId').equals(schoolId).toArray() : db.students.toArray()
+  )
+  const classes = useLiveQuery(
+    () => schoolId ? db.classes.where('schoolId').equals(schoolId).toArray() : db.classes.toArray()
+  )
+  const scale = useLiveQuery(
+    () => schoolId ? db.gradingScale.where('schoolId').equals(schoolId).toArray() : db.gradingScale.toArray()
+  )
+  const mtrAll = useLiveQuery(
+    () => schoolId ? db.mtrRecords.where('schoolId').equals(schoolId).toArray() : db.mtrRecords.toArray()
+  )
 
   const classMap = useMemo(() => {
     const m = new Map<number, ClassConfig>()

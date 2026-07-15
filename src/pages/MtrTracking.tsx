@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/schema'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
+import { useAuth } from '../contexts/AuthContext'
 import type { Student, MTRRecord, MTRSkillStatus, School } from '../types'
 
 const CLASS_LIST = [1, 2, 3, 4, 5]
@@ -65,13 +66,19 @@ function TriState({
 }
 
 export default function MTRTracking() {
+  const { profile } = useAuth()
+  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [tab, setTab] = useState<'entry' | 'summary' | 'official'>('entry')
   const [classId, setClassId] = useState(1)
   const [savedAt, setSavedAt] = useState(0)
   const [printing, setPrinting] = useState(false)
 
-  const studentsAll = useLiveQuery(() => db.students.toArray())
-  const mtrAll = useLiveQuery(() => db.mtrRecords.toArray())
+  const studentsAll = useLiveQuery(
+    () => schoolId ? db.students.where('schoolId').equals(schoolId).toArray() : db.students.toArray()
+  )
+  const mtrAll = useLiveQuery(
+    () => schoolId ? db.mtrRecords.where('schoolId').equals(schoolId).toArray() : db.mtrRecords.toArray()
+  )
   const school = useLiveQuery(() => db.school.get('school'))
 
   // Per-class data for the entry view.

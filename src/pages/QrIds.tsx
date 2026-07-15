@@ -1,18 +1,21 @@
 import { useState, useMemo } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/schema'
+import { useAuth } from '../contexts/AuthContext'
 import QRCode from 'qrcode'
 
 const CLASS_LIST = [1, 2, 3, 4, 5]
 const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
 
 export default function QrIds() {
+  const { profile } = useAuth()
+  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [classId, setClassId] = useState(1)
   const [qrDataUrls, setQrDataUrls] = useState<Record<string, string>>({})
 
   const students = useLiveQuery(
-    () => db.students.where('classId').equals(classId).toArray(),
-    [classId]
+    () => schoolId ? db.students.where('schoolId').equals(schoolId).and(s => s.classId === classId).toArray() : db.students.where('classId').equals(classId).toArray(),
+    [schoolId, classId]
   )
 
   const sorted = useMemo(

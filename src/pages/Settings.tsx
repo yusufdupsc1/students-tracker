@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/schema'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 import type { School, ClassConfig, GradingScaleRow, SubjectSlot } from '../types'
 
@@ -35,6 +37,8 @@ function Field({
 }
 
 export default function Settings() {
+  const { profile } = useAuth()
+  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [savedAt, setSavedAt] = useState(0)
 
   // --- School (single row) ---
@@ -44,9 +48,40 @@ export default function Settings() {
     if (schoolLive && !school) setSchool(schoolLive)
   }, [schoolLive, school])
 
+  // Load school from Supabase if available
+  useEffect(() => {
+    if (!schoolId) return
+    ;(async () => {
+      try {
+        const { data } = await supabase.from('schools').select('*').eq('id', schoolId).single()
+        if ((data as any) && !school) {
+          setSchool({
+            id: (data as any).id,
+            name: (data as any).name,
+            village: (data as any).village || '',
+            postOffice: (data as any).post_office || '',
+            upazila: (data as any).upazila || '',
+            district: (data as any).district || ''
+          })
+        }
+      } catch {
+        // ignore
+      }
+    })()
+  }, [schoolId, school])
+
   const saveSchool = useDebouncedCallback((s: School) => {
     void db.school.put(s)
     setSavedAt(Date.now())
+    if (schoolId) {
+      ;(supabase as any).from('schools').update({
+        name: s.name,
+        village: s.village,
+        post_office: s.postOffice,
+        upazila: s.upazila,
+        district: s.district
+      }).eq('id', schoolId).then(() => {})
+    }
   }, 600)
   const onSchool = (patch: Partial<School>) => {
     if (!school) return
@@ -56,7 +91,10 @@ export default function Settings() {
   }
 
   // --- Grading scale (table keyed by minPercent) ---
-  const scaleLive = useLiveQuery(() => db.gradingScale.toArray())
+  const scaleLive = useLiveQuery(
+    () => schoolId ? db.gradingScale.where('schoolId').equals(schoolId).toArray() : db.gradingScale.toArray(),
+    [schoolId]
+  )
   const [scale, setScale] = useState<ScaleRowLocal[]>([])
   useEffect(() => {
     if (scaleLive && scale.length === 0) {
@@ -109,7 +147,10 @@ export default function Settings() {
   }
 
   // --- Per-class subject configuration ---
-  const classesLive = useLiveQuery(() => db.classes.toArray())
+  const classesLive = useLiveQuery(
+    () => schoolId ? db.classes.where('schoolId').equals(schoolId).toArray() : db.classes.toArray(),
+    [schoolId]
+  )
   const [classes, setClasses] = useState<ClassConfig[]>([])
   useEffect(() => {
     if (classesLive && classes.length === 0) setClasses(classesLive)

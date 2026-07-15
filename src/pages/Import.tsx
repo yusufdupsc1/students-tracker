@@ -39,13 +39,14 @@ export default function Import() {
     persisted: boolean
   } | null>(null)
 
+  const { profile } = useAuth()
+  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
+
   const snapshots = useLiveQuery(
     () => db.snapshots.orderBy('createdAt').reverse().toArray(),
     [],
     [] as { id?: number; createdAt: string; reason: string }[]
   )
-
-  const { profile } = useAuth()
 
   useEffect(() => {
     void storageStatus().then(setStorage)
@@ -185,7 +186,6 @@ export default function Import() {
     setRemoteError('')
     setRemoteDone('')
     try {
-      const schoolId = profile?.school?.id
       const result = await syncFromRemote(schoolId)
       setRemoteDone(`রিমোট ডেটা ইমপোর্ট হয়েছে (${result.records} জন শিক্ষার্থী)`)
     } catch {
@@ -200,7 +200,6 @@ export default function Import() {
     setRemoteError('')
     setRemoteDone('')
     try {
-      const schoolId = profile?.school?.id
       await syncToRemote(schoolId)
       setRemoteDone('ডেটা রিমোটে সংরক্ষিত হয়েছে।')
     } catch {
@@ -216,7 +215,6 @@ export default function Import() {
     setRemoteError('')
     setRemoteDone('')
     try {
-      const schoolId = profile?.school?.id
       await resetRemote(schoolId)
       setRemoteDone('রিমোট ডাটাবেস রিসেট করা হয়েছে।')
     } catch {

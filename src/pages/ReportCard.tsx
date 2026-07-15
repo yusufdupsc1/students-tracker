@@ -11,6 +11,7 @@ import {
   passThreshold,
   getActiveSubjects
 } from '../lib/calculations'
+import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow, School } from '../types'
 
 const CLASS_LIST = [1, 2, 3, 4, 5]
@@ -159,14 +160,25 @@ function ReportCardView({
 }
 
 export default function ReportCard() {
+  const { profile } = useAuth()
+  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [params, setParams] = useSearchParams()
   const [classId, setClassId] = useState<number>(Number(params.get('classId')) || 1)
   const [studentId, setStudentId] = useState<string>(params.get('studentId') || '')
   const [batch, setBatch] = useState(false)
 
-  const classConfig = useLiveQuery(() => db.classes.get(classId), [classId])
-  const students = useLiveQuery(() => db.students.where('classId').equals(classId).toArray(), [classId])
-  const scale = useLiveQuery(() => db.gradingScale.toArray())
+  const classConfig = useLiveQuery(
+    () => schoolId ? db.classes.where('schoolId').equals(schoolId).and(c => c.id === classId).first() : db.classes.get(classId),
+    [schoolId, classId]
+  )
+  const students = useLiveQuery(
+    () => schoolId ? db.students.where('schoolId').equals(schoolId).and(s => s.classId === classId).toArray() : db.students.where('classId').equals(classId).toArray(),
+    [schoolId, classId]
+  )
+  const scale = useLiveQuery(
+    () => schoolId ? db.gradingScale.where('schoolId').equals(schoolId).toArray() : db.gradingScale.toArray(),
+    [schoolId]
+  )
   const school = useLiveQuery(() => db.school.get('school'))
 
   // Keep URL in sync (so roster deep-links work and back/forward is sane).

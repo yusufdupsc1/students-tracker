@@ -10,6 +10,7 @@ import {
   passThreshold,
   getActiveSubjects
 } from '../lib/calculations'
+import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow } from '../types'
 
 const CLASS_LIST = [1, 2, 3, 4, 5]
@@ -216,16 +217,24 @@ function StudentFormModal({
 }
 
 export default function ClassRoster() {
+  const { profile } = useAuth()
+  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [classId, setClassId] = useState(1)
   const [modal, setModal] = useState<FormState | null>(null)
   const [error, setError] = useState('')
 
-  const classConfig = useLiveQuery(() => db.classes.get(classId), [classId])
-  const students = useLiveQuery(
-    () => db.students.where('classId').equals(classId).toArray(),
-    [classId]
+  const classConfig = useLiveQuery(
+    () => schoolId ? db.classes.where('schoolId').equals(schoolId).and(c => c.id === classId).first() : db.classes.get(classId),
+    [schoolId, classId]
   )
-  const scale = useLiveQuery(() => db.gradingScale.toArray())
+  const students = useLiveQuery(
+    () => schoolId ? db.students.where('schoolId').equals(schoolId).and(s => s.classId === classId).toArray() : db.students.where('classId').equals(classId).toArray(),
+    [schoolId, classId]
+  )
+  const scale = useLiveQuery(
+    () => schoolId ? db.gradingScale.where('schoolId').equals(schoolId).toArray() : db.gradingScale.toArray(),
+    [schoolId]
+  )
 
   const active = useMemo<{ name: string; fullMarks: number }[]>(
     () => (classConfig ? getActiveSubjects(classConfig) : []),

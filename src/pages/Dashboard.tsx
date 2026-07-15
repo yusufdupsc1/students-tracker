@@ -16,6 +16,7 @@ import {
   lookupGpaAndGrade,
   calculateResult
 } from '../lib/calculations'
+import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow } from '../types'
 
 // Pass rate at/above this (among evaluated students) is considered "Excellent".
@@ -51,9 +52,12 @@ function Kpi({ label, value, accent }: { label: string; value: string; accent?: 
 }
 
 export default function Dashboard() {
-  const classes = useLiveQuery(() => db.classes.toArray())
-  const students = useLiveQuery(() => db.students.toArray())
-  const scale = useLiveQuery(() => db.gradingScale.toArray())
+  const { profile } = useAuth()
+  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
+
+  const classes = useLiveQuery(() => schoolId ? db.classes.where('schoolId').equals(schoolId).toArray() : db.classes.toArray())
+  const students = useLiveQuery(() => schoolId ? db.students.where('schoolId').equals(schoolId).toArray() : db.students.toArray())
+  const scale = useLiveQuery(() => schoolId ? db.gradingScale.where('schoolId').equals(schoolId).toArray() : db.gradingScale.toArray())
 
   const ready = !!classes && !!students && !!scale && classes.length > 0 && scale.length > 0
   const classMap = useMemo(() => new Map((classes ?? []).map((c) => [c.id, c])), [classes])

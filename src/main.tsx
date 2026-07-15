@@ -14,18 +14,22 @@ void seedDatabase()
 // Best-effort: ask the browser to keep our IndexedDB under storage pressure.
 void requestPersistentStorage()
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>
-)
-
-if ('serviceWorker' in navigator) {
-  import('virtual:pwa-register')
-    .then(({ registerSW }) => registerSW({ immediate: true }))
-    .catch(() => {})
+const root = document.getElementById('root')
+if (root) {
+  ReactDOM.createRoot(root).render(
+    <React.StrictMode>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </BrowserRouter>
+    </React.StrictMode>
+  )
 }
+
+// Temporarily disabled for debugging: re-enable after confirming app loads
+// if ('serviceWorker' in navigator) {
+//   import('virtual:pwa-register')
+//     .then(({ registerSW }) => registerSW({ immediate: true }))
+//     .catch(() => {})
+// }

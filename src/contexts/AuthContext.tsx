@@ -3,6 +3,9 @@ import { supabase } from '../lib/supabase'
 import type { User } from '@supabase/supabase-js'
 import type { School, UserProfile } from '../lib/database.types'
 
+console.log('[Auth] Supabase URL:', (supabase as any)?.supabaseUrl || 'not set')
+console.log('[Auth] Supabase key present:', !!((supabase as any)?.supabaseKey || (supabase as any)?.auth?.options?.authKey))
+
 interface AuthContextType {
   user: User | null
   profile: (UserProfile & { school: School }) | null
@@ -20,8 +23,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    console.log('[Auth] Initializing auth...')
+    const timeout = setTimeout(() => {
+      console.warn('[Auth] getSession timed out after 8s')
+      setUser(null)
+      setProfile(null)
+      setLoading(false)
+    }, 8000)
+
     supabase.auth.getSession()
       .then(({ data: { session } }) => {
+        clearTimeout(timeout)
+        console.log('[Auth] getSession result:', session?.user?.email || 'no session')
         setUser(session?.user ?? null)
         if (session?.user) {
           loadProfile(session.user.id)
@@ -30,13 +43,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setLoading(false)
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        clearTimeout(timeout)
+        console.error('[Auth] getSession error:', err)
         setUser(null)
         setProfile(null)
         setLoading(false)
       })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('[Auth] Auth state changed:', session?.user?.email || 'logged out')
       setUser(session?.user ?? null)
       if (session?.user) {
         loadProfile(session.user.id)
@@ -46,7 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      clearTimeout(timeout)
+      subscription.unsubscribe()
+    }
   }, [])
 
   async function loadProfile(userId: string) {

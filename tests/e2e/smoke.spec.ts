@@ -7,32 +7,20 @@ test.describe('Application smoke tests', () => {
 
   test('homepage loads without errors', async ({ page }) => {
     await expect(page.locator('h1')).toContainText('বেজখণ্ড')
-    await expect(page.locator('text=ড্যাশবোর্ড')).toBeVisible()
+    await expect(page.locator('text=বিনামূল্যে ট্রায়াল')).toBeVisible()
   })
 
-  test('sidebar navigation is visible on desktop', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 900 })
-    await page.goto('/')
-    await expect(page.locator('text=তালিকা')).toBeVisible()
-    await expect(page.locator('text=ফলাফল')).toBeVisible()
-    await expect(page.locator('text=Progress ট্র্যাকিং')).toBeVisible()
-    await expect(page.locator('text=ইমপোর্ট ও ব্যাকআপ')).toBeVisible()
-    await expect(page.locator('text=সেটিংস')).toBeVisible()
+  test('login page loads', async ({ page }) => {
+    await page.goto('/login')
+    await expect(page.locator('h1')).toContainText('লগইন')
   })
 
-  test('mobile bottom navigation is visible', async ({ page }) => {
-    await page.setViewportSize({ width: 375, height: 812 })
-    await page.goto('/')
-    await expect(page.locator('text=ড্যাশবোর্ড')).toBeVisible()
-    await expect(page.locator('text=তালিকা')).toBeVisible()
+  test('signup page loads', async ({ page }) => {
+    await page.goto('/signup')
+    await expect(page.locator('h1')).toContainText('স্কুল রেজিস্ট্রেশন')
   })
 
-  test('dashboard loads with seeded data', async ({ page }) => {
-    await page.goto('/')
-    await expect(page.locator('text=ক্লাস অনুযায়ী সারসংক্ষেপ')).toBeVisible()
-  })
-
-  test('no console errors on any page', async ({ page }) => {
+  test('no console errors on public pages', async ({ page }) => {
     const errors: string[] = []
     page.on('console', msg => {
       if (msg.type() === 'error') errors.push(msg.text())

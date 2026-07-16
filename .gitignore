@@ -81,3 +81,5 @@ yarn.lock
 *.dmg
 *.exe
 *.msi
+.vercel
+.env*.local

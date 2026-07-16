@@ -6,18 +6,18 @@ import { db } from '../db/schema'
 type NavItem = { to: string; label: string; end?: boolean }
 
 const PRIMARY_NAV: NavItem[] = [
-  { to: '/', label: 'ড্যাশবোর্ড', end: true },
-  { to: '/roster', label: 'তালিকা' },
-  { to: '/report-card', label: 'ফলাফল' },
-  { to: '/search', label: 'অনুসন্ধান' },
+  { to: '/app', label: 'ড্যাশবোর্ড', end: true },
+  { to: '/app/roster', label: 'তালিকা' },
+  { to: '/app/report-card', label: 'ফলাফল' },
+  { to: '/app/search', label: 'অনুসন্ধান' },
   { to: '#more', label: 'আরও' }
 ]
 
 const SHEET_NAV: NavItem[] = [
-  { to: '/mtr', label: 'Progress ট্র্যাকিং' },
-  { to: '/qr-ids', label: 'QR আইডি' },
-  { to: '/import', label: 'ইমপোর্ট ও ব্যাকআপ' },
-  { to: '/settings', label: 'সেটিংস' }
+  { to: '/app/mtr', label: 'Progress ট্র্যাকিং' },
+  { to: '/app/qr-ids', label: 'QR আইডি' },
+  { to: '/app/import', label: 'ইমপোর্ট ও ব্যাকআপ' },
+  { to: '/app/settings', label: 'সেটিংস' }
 ]
 
 function linkClass({ isActive }: { isActive: boolean }) {

@@ -48,7 +48,7 @@ export class AppDB extends Dexie {
       classes: 'schoolId, id',
       students: 'schoolId, id, classId, roll, &[classId+roll]',
       mtrRecords: 'schoolId, id, classId, studentId',
-      snapshots: 'schoolId, ++id, createdAt'
+      snapshots: '++id, schoolId, createdAt'
     })
   }
 }

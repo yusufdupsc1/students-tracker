@@ -51,7 +51,7 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
 
         {/* Protected routes */}
-        <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route path="app/*" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={lazyPage(<Dashboard />)} />
           <Route path="roster" element={lazyPage(<ClassRoster />)} />
           <Route path="report-card" element={lazyPage(<ReportCard />)} />

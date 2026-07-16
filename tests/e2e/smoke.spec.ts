@@ -7,7 +7,7 @@ test.describe('Application smoke tests', () => {
 
   test('homepage loads without errors', async ({ page }) => {
     await expect(page.locator('h1')).toContainText('বেজখণ্ড')
-    await expect(page.locator('text=বিনামূল্যে ট্রায়াল')).toBeVisible()
+    await expect(page.locator('text=বিনামূল্যে ট্রায়াল শুরু করুন')).toBeVisible()
   })
 
   test('login page loads', async ({ page }) => {

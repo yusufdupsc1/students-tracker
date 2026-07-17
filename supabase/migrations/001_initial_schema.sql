@@ -53,6 +53,71 @@ create table public.subscriptions (
   updated_at timestamptz not null default now()
 );
 
+-- Grading scale table
+create table public.grading_scale (
+  id uuid primary key default uuid_generate_v4(),
+  school_id uuid not null references public.schools(id) on delete cascade,
+  min_percent integer not null,
+  gpa numeric not null,
+  grade text not null,
+  remark text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  UNIQUE(school_id, min_percent)
+);
+
+-- Classes table
+create table public.classes (
+  id uuid primary key default uuid_generate_v4(),
+  school_id uuid not null references public.schools(id) on delete cascade,
+  class_number integer not null,
+  name text not null,
+  subjects jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  UNIQUE(school_id, class_number)
+);
+
+-- Students table
+create table public.students (
+  id uuid primary key default uuid_generate_v4(),
+  school_id uuid not null references public.schools(id) on delete cascade,
+  class_id uuid not null references public.classes(id) on delete cascade,
+  roll integer not null,
+  name text not null,
+  guardian text,
+  village text,
+  attendance numeric,
+  marks jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  UNIQUE(school_id, class_id, roll)
+);
+
+-- MTR records table
+create table public.mtr_records (
+  id uuid primary key default uuid_generate_v4(),
+  school_id uuid not null references public.schools(id) on delete cascade,
+  student_id uuid not null references public.students(id) on delete cascade,
+  class_id uuid not null references public.classes(id) on delete cascade,
+  roll integer not null,
+  bangla_reading text not null default 'unassessed',
+  math_four_rules text not null default 'unassessed',
+  english_reading text not null default 'unassessed',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  UNIQUE(school_id, student_id)
+);
+
+-- Snapshots table
+create table public.snapshots (
+  id uuid primary key default uuid_generate_v4(),
+  school_id uuid not null references public.schools(id) on delete cascade,
+  reason text not null,
+  json_data jsonb not null,
+  created_at timestamptz not null default now()
+);
+
 -- Insert default plans
 insert into public.plans (id, name, price_monthly_bdt, price_yearly_bdt, max_students, features) values
   ('basic', 'Basic', 299, 2990, 100, '["core_features", "report_cards", "mtr_tracking"]'::jsonb),
@@ -65,6 +130,11 @@ alter table public.schools enable row level security;
 alter table public.user_profiles enable row level security;
 alter table public.subscriptions enable row level security;
 alter table public.plans enable row level security;
+alter table public.grading_scale enable row level security;
+alter table public.classes enable row level security;
+alter table public.students enable row level security;
+alter table public.mtr_records enable row level security;
+alter table public.snapshots enable row level security;
 
 -- Plans are public read-only
 create policy "Plans are viewable by everyone" on public.plans for select using (true);
@@ -88,4 +158,44 @@ create policy "Users can view their school subscription" on public.subscriptions
     select 1 from public.user_profiles up
     where up.school_id = subscriptions.school_id and up.id = auth.uid()
   )
+);
+
+-- Grading scale policies
+create policy "Users can view their school grading scale" on public.grading_scale for select using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+create policy "Users can manage their school grading scale" on public.grading_scale for all using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+
+-- Classes policies
+create policy "Users can view their school classes" on public.classes for select using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+create policy "Users can manage their school classes" on public.classes for all using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+
+-- Students policies
+create policy "Users can view their school students" on public.students for select using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+create policy "Users can manage their school students" on public.students for all using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+
+-- MTR records policies
+create policy "Users can view their school mtr records" on public.mtr_records for select using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+create policy "Users can manage their school mtr records" on public.mtr_records for all using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+
+-- Snapshots policies
+create policy "Users can view their school snapshots" on public.snapshots for select using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
+);
+create policy "Users can manage their school snapshots" on public.snapshots for all using (
+  school_id in (select school_id from public.user_profiles where id = auth.uid())
 );

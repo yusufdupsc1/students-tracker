@@ -34,6 +34,9 @@ export default function Signup() {
             {error}
           </div>
         )}
+        <div className="mb-4 rounded-xl bg-bd-green-50 border border-bd-green-300 text-bd-green-700 text-sm px-4 py-2.5">
+          সাইন আপ করার পরে আপনার ইমেইল অ্যাড্রেস যাচাই করা আবশ্যক। অনুগ্রহ করে আপনার ইমেইলে যাচাই লিংকে ক্লিক করুন।
+        </div>
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">স্কুলের নাম</label>

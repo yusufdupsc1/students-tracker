@@ -9,8 +9,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [checking, setChecking] = useState(true)
 
   useEffect(() => {
-    if (!user || !profile) {
+    if (!user) {
       setChecking(false)
+      return
+    }
+
+    if (!profile) {
+      // Profile not yet loaded; keep checking until it arrives.
       return
     }
 

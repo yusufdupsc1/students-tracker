@@ -34,11 +34,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('[Auth] getSession result:', session?.user?.email || 'no session')
         setUser(session?.user ?? null)
         if (session?.user) {
-          loadProfile(session.user.id)
+          loadProfile(session.user.id).catch(() => {
+            setProfile(null)
+          })
         } else {
           setProfile(null)
-          setLoading(false)
         }
+        setLoading(false)
       })
       .catch((err) => {
         clearTimeout(timeout)
@@ -52,7 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('[Auth] Auth state changed:', session?.user?.email || 'logged out')
       setUser(session?.user ?? null)
       if (session?.user) {
-        loadProfile(session.user.id)
+        loadProfile(session.user.id).catch(() => {
+          setProfile(null)
+        })
       } else {
         setProfile(null)
         setLoading(false)
@@ -77,8 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfile(data as AuthContextType['profile'])
     } catch (e) {
       console.error('Failed to load profile:', e)
-    } finally {
-      setLoading(false)
+      throw e
     }
   }
 
@@ -87,6 +90,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        await loadProfile(user.id)
+      }
       return { error: null }
     } catch (e) {
       return { error: e as Error }

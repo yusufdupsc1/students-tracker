@@ -16,7 +16,12 @@ export default function Login() {
     setBusy(true)
     const { error } = await signIn(email, password)
     if (error) {
-      setError('লগইন ব্যর্থ হয়েছে। ইমেইল বা পাসওয়ার্ড চেক করুন।')
+      const msg = error.message || ''
+      if (msg.includes('Email not confirmed')) {
+        setError('আপনার ইমেইল নিশ্চিত করা হয়নি। অনুগ্রহ করে আপনার ইমেইলে যাচাই লিংকে ক্লিক করুন।')
+      } else {
+        setError('লগইন ব্যর্থ হয়েছে। ইমেইল বা পাসওয়ার্ড চেক করুন।')
+      }
     } else {
       navigate('/')
     }

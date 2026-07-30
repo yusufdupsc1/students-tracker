@@ -49,14 +49,14 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run preview &
-      - run: npx wait-on http://localhost:4173
+      - run: npx wait-on http://localhost:4173 -t 60000
       - uses: treosh/lighthouse-ci-action@v12
         with:
           uploadArtifacts: true
           urls: |
             http://localhost:4173/
-            http://localhost:4173/roster
-            http://localhost:4173/settings
+            http://localhost:4173/login
+            http://localhost:4173/signup
         env:
           LHCI_BUILD_CONTEXT__CURRENT_STAGE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'production' || 'staging' }}
 

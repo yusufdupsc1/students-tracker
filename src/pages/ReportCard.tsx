@@ -13,8 +13,7 @@ import {
 } from '../lib/calculations'
 import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow, School } from '../types'
-
-const CLASS_LIST = [1, 2, 3, 4, 5]
+import { CLASS_LIST, CLASS_NAMES } from '../lib/classes'
 
 function subjectRow(
   name: string,
@@ -221,7 +220,7 @@ export default function ReportCard() {
                   classId === c ? 'tab-active' : 'tab-inactive'
                 }`}
               >
-                {['প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম'][c - 1]}
+                {CLASS_NAMES[c]}
               </button>
             ))}
           </div>

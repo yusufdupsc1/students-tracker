@@ -29,13 +29,52 @@ const SUBJECTS_6 = [
   'বাংলাদেশ ও বিশ্বপরিচয়',
   'ধর্ম'
 ]
+// Secondary (6-8) — 7 subjects, 100 marks
+const SUBJECTS_6_8 = [
+  'বাংলা',
+  'English',
+  'গণিত',
+  'বিজ্ঞান',
+  'বাংলাদেশ ও বিশ্বপরিচয়',
+  'ধর্ম',
+  'ICT'
+]
+// SSC (9-10) — 8 subjects, 100 marks
+const SUBJECTS_9_10 = [
+  'বাংলা',
+  'English',
+  'গণিত',
+  'পদার্থবিজ্ঞান',
+  'রসায়ন',
+  'জীববিজ্ঞান',
+  'বাংলাদেশ ও বিশ্বপরিচয়',
+  'ধর্ম'
+]
+// HSC (11-12) — 8 subjects, 100 marks (group-flexible, editable in Settings)
+const SUBJECTS_11_12 = [
+  'বাংলা',
+  'English',
+  'ICT',
+  'পদার্থবিজ্ঞান',
+  'রসায়ন',
+  'জীববিজ্ঞান',
+  'উচ্চতর গণিত',
+  'অর্থনীতি'
+]
 
 export const DEFAULT_CLASSES: ClassConfig[] = [
   { schoolId: 'school', id: 1, name: 'প্রথম', subjects: subjects(SUBJECTS_3, 50) },
   { schoolId: 'school', id: 2, name: 'দ্বিতীয়', subjects: subjects(SUBJECTS_3, 50) },
   { schoolId: 'school', id: 3, name: 'তৃতীয়', subjects: subjects(SUBJECTS_6, 70) },
   { schoolId: 'school', id: 4, name: 'চতুর্থ', subjects: subjects(SUBJECTS_6, 70) },
-  { schoolId: 'school', id: 5, name: 'পঞ্চম', subjects: subjects(SUBJECTS_6, 70) }
+  { schoolId: 'school', id: 5, name: 'পঞ্চম', subjects: subjects(SUBJECTS_6, 70) },
+  { schoolId: 'school', id: 6, name: 'ষষ্ঠ', subjects: subjects(SUBJECTS_6_8, 100) },
+  { schoolId: 'school', id: 7, name: 'সপ্তম', subjects: subjects(SUBJECTS_6_8, 100) },
+  { schoolId: 'school', id: 8, name: 'অষ্টম', subjects: subjects(SUBJECTS_6_8, 100) },
+  { schoolId: 'school', id: 9, name: 'নবম', subjects: subjects(SUBJECTS_9_10, 100) },
+  { schoolId: 'school', id: 10, name: 'দশম', subjects: subjects(SUBJECTS_9_10, 100) },
+  { schoolId: 'school', id: 11, name: 'একাদশ', subjects: subjects(SUBJECTS_11_12, 100) },
+  { schoolId: 'school', id: 12, name: 'দ্বাদশ', subjects: subjects(SUBJECTS_11_12, 100) }
 ]
 
 export const DEFAULT_SCHOOL: School = {
@@ -54,10 +93,18 @@ export const DEFAULT_SCHOOL: School = {
  */
 export async function seedDatabase(): Promise<boolean> {
   const existing = await db.classes.count()
-  if (existing > 0) return false
+  if (existing > 0) {
+    // Ensure 6-12 exist for older DBs that only had 1-5
+    await ensureClassesUpTo12()
+    return false
+  }
 
   try {
-    if (await seedRealData()) return true
+    if (await seedRealData()) {
+      // Real seed only had 1-5 — add 6-12 on top
+      await ensureClassesUpTo12()
+      return true
+    }
   } catch {
     // Fall through to defaults if the baked seed is unavailable.
   }
@@ -74,4 +121,17 @@ export async function seedDatabase(): Promise<boolean> {
     }
   )
   return true
+}
+
+/**
+ * Ensure classes 6-12 exist. For existing installations that only have 1-5,
+ * add the missing ones without touching existing data.
+ */
+export async function ensureClassesUpTo12(): Promise<void> {
+  const existingIds = new Set((await db.classes.toArray()).map((c) => c.id))
+  const missing = DEFAULT_CLASSES.filter((c) => !existingIds.has(c.id))
+  if (missing.length > 0) {
+    await db.classes.bulkPut(missing)
+    console.log(`[Seed] Added missing classes: ${missing.map((c) => c.name).join(', ')}`)
+  }
 }

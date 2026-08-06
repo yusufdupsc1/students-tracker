@@ -11,7 +11,7 @@ import {
 import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, MTRRecord, MTRSkillStatus } from '../types'
 
-const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
+import { CLASS_NAMES } from '../lib/classes'
 
 type SkillKey = 'banglaReading' | 'mathFourRules' | 'englishReading'
 const SKILLS: { key: SkillKey; label: string }[] = [

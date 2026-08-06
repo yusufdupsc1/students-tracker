@@ -18,16 +18,16 @@ export interface SubjectSlot {
 
 export interface ClassConfig {
   schoolId?: string
-  /** 1..5 */
+  /** 1..12 */
   id: number
-  /** Bengali class name, e.g. প্রথম */
+  /** Bengali class name, e.g. প্রথম / ষষ্ঠ */
   name: string
   /** Up to 8 subject slots. A slot is active only if fullMarks > 0. */
   subjects: SubjectSlot[]
 }
 
 export interface School {
-  /** UUID from Supabase Auth. */
+  /** UUID from local auth (fixed 'school' in lite mode) */
   id: string
   name: string
   village: string
@@ -40,7 +40,7 @@ export interface Student {
   schoolId?: string
   /** `${classId}_${roll}` — stable composite id. */
   id: string
-  classId: number
+  classId: number // 1..12
   /** Unique within the class. */
   roll: number
   name: string

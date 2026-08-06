@@ -7,7 +7,7 @@ import { db } from '../db/schema'
 import { captureSnapshot, restoreSnapshot } from '../db/snapshots'
 import { storageStatus } from '../lib/persistence'
 
-const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
+import { CLASS_NAMES } from '../lib/classes'
 
 export default function Import() {
   const [result, setResult] = useState<ImportResult | null>(null)

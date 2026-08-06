@@ -12,9 +12,7 @@ import {
 } from '../lib/calculations'
 import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow } from '../types'
-
-const CLASS_LIST = [1, 2, 3, 4, 5]
-const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
+import { CLASS_LIST, CLASS_NAMES } from '../lib/classes'
 
 const RESULT_STYLE: Record<'Pass' | 'Fail' | 'Incomplete', string> = {
   Pass: 'bg-bd-green-100 text-bd-green-800 border-bd-green-300',

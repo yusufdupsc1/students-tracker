@@ -41,6 +41,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         } catch {}
 
+        // One-time cleanup: remove legacy Supabase keys (local lite mode — no email verification, no external DB)
+        try {
+          Object.keys(localStorage).forEach((k) => {
+            if (k.startsWith('sb-') || k.includes('supabase') || k.startsWith('supabase-') || k === 'supabase.auth.token') {
+              localStorage.removeItem(k)
+            }
+          })
+        } catch {}
+
         const session = getStoredSession()
         if (!session) {
           if (!cancelled) {

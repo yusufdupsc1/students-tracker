@@ -3,11 +3,9 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { importXlsxFile, applyImport, type ImportResult } from '../lib/importXlsx'
 import { downloadBackup, applyBackup } from '../lib/backup'
 import { encryptBackup, decryptBackup, type EncryptedBackup } from '../lib/encryptedBackup'
-import { syncFromRemote, syncToRemote, resetRemote } from '../lib/remoteSync'
 import { db } from '../db/schema'
 import { captureSnapshot, restoreSnapshot } from '../db/snapshots'
 import { storageStatus } from '../lib/persistence'
-import { useAuth } from '../contexts/AuthContext'
 
 const CLASS_NAMES = ['', 'প্রথম', 'দ্বিতীয়', 'তৃতীয়', 'চতুর্থ', 'পঞ্চম']
 
@@ -29,18 +27,11 @@ export default function Import() {
   const [encBusy, setEncBusy] = useState(false)
   const [encDone, setEncDone] = useState(false)
 
-  const [remoteBusy, setRemoteBusy] = useState(false)
-  const [remoteError, setRemoteError] = useState('')
-  const [remoteDone, setRemoteDone] = useState('')
-
   const [storage, setStorage] = useState<{
     usage: number
     quota: number
     persisted: boolean
   } | null>(null)
-
-  const { profile } = useAuth()
-  const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
 
   const snapshots = useLiveQuery(
     () => db.snapshots.orderBy('createdAt').reverse().toArray(),
@@ -86,7 +77,7 @@ export default function Import() {
         return
       }
       setResult(parsed)
-    } catch (e) {
+    } catch {
       setResult(null)
       setError('ফাইল পড়া যায়নি বা শিটের বিন্যাস সঠিক নয়। সঠিক .xlsx ফাইল নির্বাচন করুন।')
     }
@@ -178,49 +169,6 @@ export default function Import() {
       setEncError('এনক্রিপ্টেড ব্যাকআপ ফাইল সঠিক নয় বা পাসওয়ার্ড ভুল।')
     } finally {
       setEncBusy(false)
-    }
-  }
-
-  async function onSyncFromRemote() {
-    setRemoteBusy(true)
-    setRemoteError('')
-    setRemoteDone('')
-    try {
-      const result = await syncFromRemote(schoolId)
-      setRemoteDone(`রিমোট ডেটা ইমপোর্ট হয়েছে (${result.records} জন শিক্ষার্থী)`)
-    } catch {
-      setRemoteError('রিমোট ডেটা আনতে সমস্যা হয়েছে।')
-    } finally {
-      setRemoteBusy(false)
-    }
-  }
-
-  async function onSyncToRemote() {
-    setRemoteBusy(true)
-    setRemoteError('')
-    setRemoteDone('')
-    try {
-      await syncToRemote(schoolId)
-      setRemoteDone('ডেটা রিমোটে সংরক্ষিত হয়েছে।')
-    } catch {
-      setRemoteError('রিমোটে সংরক্ষণে সমস্যা হয়েছে।')
-    } finally {
-      setRemoteBusy(false)
-    }
-  }
-
-  async function onResetRemote() {
-    if (!window.confirm('রিমোট ডাটাবেস সম্পূর্ণ মুছে ফেলা হবে। আপনি কি নিশ্চিত?')) return
-    setRemoteBusy(true)
-    setRemoteError('')
-    setRemoteDone('')
-    try {
-      await resetRemote(schoolId)
-      setRemoteDone('রিমোট ডাটাবেস রিসেট করা হয়েছে।')
-    } catch {
-      setRemoteError('রিমোট রিসেটে সমস্যা হয়েছে।')
-    } finally {
-      setRemoteBusy(false)
     }
   }
 
@@ -318,9 +266,9 @@ export default function Import() {
 
       {/* Backup */}
       <div className="glass-card p-6">
-        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">ব্যাকআপ (JSON)</h2>
+        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">ব্যাকআপ (JSON) — লোকাল</h2>
         <p className="text-sm text-gray-500 mb-4 font-medium">
-          সম্পূর্ণ ডেটা এক্সপোর্ট করুন বা পূর্ববর্তী ব্যাকআপ থেকে পুনরুদ্ধার করুন।
+          সম্পূর্ণ ডেটা লোকালভাবে এক্সপোর্ট করুন বা পূর্ববর্তী ব্যাকআপ থেকে পুনরুদ্ধার করুন। কোনো সার্ভার লাগে না।
         </p>
 
         <div className="flex flex-wrap gap-3">
@@ -385,7 +333,7 @@ export default function Import() {
       <div className="glass-card p-6">
         <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">এনক্রিপ্টেড ব্যাকআপ (AES-256-GCM)</h2>
         <p className="text-sm text-gray-500 mb-4 font-medium">
-          পাসওয়ার্ড দিয়ে এনক্রিপ্ট করা ব্যাকআপ এক্সপোর্ট বা ইমপোর্ট করুন।
+          পাসওয়ার্ড দিয়ে এনক্রিপ্ট করা ব্যাকআপ এক্সপোর্ট বা ইমপোর্ট করুন — সম্পূর্ণ অফলাইন।
         </p>
 
         <div className="flex flex-wrap gap-3">
@@ -449,38 +397,6 @@ export default function Import() {
         )}
       </div>
 
-      {/* Remote sync (Vercel Blob) */}
-      <div className="glass-card p-6">
-        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">রিমোট সিঙ্ক (Vercel Blob)</h2>
-        <p className="text-sm text-gray-500 mb-4 font-medium">
-          একাধিক ডিভাইসে ব্যবহার করার জন্য ডেটা Vercel Blob-এ সংরক্ষিত হবে।
-          এটি বিনামূল্যে ৫ GB পর্যন্ত সংরক্ষণ দেয়।
-        </p>
-
-        <div className="flex flex-wrap gap-3">
-          <button onClick={onSyncFromRemote} disabled={remoteBusy} className="btn-secondary">
-            {remoteBusy ? 'আনা হচ্ছে…' : 'রিমোট থেকে আনা'}
-          </button>
-          <button onClick={onSyncToRemote} disabled={remoteBusy} className="btn-primary">
-            {remoteBusy ? 'সংরক্ষণ হচ্ছে…' : 'রিমোটে সংরক্ষণ'}
-          </button>
-          <button onClick={onResetRemote} disabled={remoteBusy} className="btn-ghost">
-            {remoteBusy ? 'রিসেট হচ্ছে…' : 'রিমোট রিসেট'}
-          </button>
-        </div>
-
-        {remoteError && (
-          <div className="mt-3 rounded-xl bg-bd-red-50 border border-bd-red-300 text-bd-red-700 text-sm px-4 py-2.5">
-            {remoteError}
-          </div>
-        )}
-        {remoteDone && (
-          <div className="mt-3 rounded-xl bg-bd-green-50 border border-bd-green-300 text-bd-green-800 text-sm px-4 py-2.5 font-medium">
-            {remoteDone}
-          </div>
-        )}
-      </div>
-
       {/* Storage durability status */}
       <div className="glass-card p-6">
         <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">স্টোরেজ অবস্থা</h2>
@@ -514,10 +430,10 @@ export default function Import() {
 
       {/* Auto-snapshots (undo for destructive imports/restores) */}
       <div className="glass-card p-6">
-        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">সাম্প্রতিক স্ন্যাপশট</h2>
+        <h2 className="text-lg font-heading font-semibold mb-1 text-bd-green-900">সাম্প্রতিক স্ন্যাপশট (Undo)</h2>
         <p className="text-sm text-gray-500 mb-3 font-medium">
           ইমপোর্ট বা ব্যাকআপ পুনরুদ্ধারের আগে স্বয়ংক্রিয়ভাবে স্ন্যাপশট নেওয়া হয়।
-          প্রয়োজনে পূর্বাবস্থায় ফিরে যেতে পারবেন।
+          ভুল হলে পূর্বাবস্থায় ফিরে যেতে পারবেন — সব লোকাল।
         </p>
 
         {snapshots.length === 0 ? (

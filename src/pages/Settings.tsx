@@ -348,6 +348,50 @@ export default function Settings() {
         ))}
       </section>
 
+      {/* Factory Reset — local lite DB */}
+      <section className="glass-card p-6 border-2 border-bd-red-200 bg-bd-red-50/30">
+        <h2 className="text-lg font-heading font-semibold mb-2 text-bd-red-700">ডেঞ্জার জোন — সব ডেটা রিসেট</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          এই বাটন চাপলে <b>IndexedDB + LocalStorage</b> এর সব ডেটা (স্কুল, শিক্ষার্থী, ইউজার, সেশন) মুছে যাবে এবং ব্রাউজার রিফ্রেশ হয়ে আবার <b>নতুন করে সাইন আপ</b> করতে হবে। Vercel এ deploy এর পর নতুন ইউজাররা এখান থেকেই শুরু করবে — কোনো ইমেইল ভেরিফিকেশন লাগে না।
+        </p>
+        <button
+          onClick={async () => {
+            const first = window.confirm('⚠️ আপনি কি নিশ্চিত? সব লোকাল ডেটা মুছে যাবে!')
+            if (!first) return
+            const second = window.prompt('নিশ্চিত করতে লিখুন: RESET')
+            if (second !== 'RESET') {
+              alert('বাতিল করা হয়েছে। RESET লিখতে হয়।')
+              return
+            }
+            try {
+              // Clear Dexie + localStorage session + fallbacks
+              const { db } = await import('../db/schema')
+              await db.delete()
+              localStorage.removeItem('bejkhonda-session')
+              localStorage.removeItem('bejkhonda-users-fallback')
+              localStorage.removeItem('bejkhonda-school-fallback')
+              localStorage.removeItem('bejkhonda-remote-sync-meta')
+              // Also clear all bejkhonda keys
+              Object.keys(localStorage).forEach(k => {
+                if (k.startsWith('bejkhonda')) localStorage.removeItem(k)
+              })
+              alert('✅ সব ডেটা মুছে ফেলা হয়েছে। এখন নতুন করে সাইন আপ করুন।')
+              window.location.href = '/signup'
+              setTimeout(() => window.location.reload(), 500)
+            } catch (e) {
+              console.error(e)
+              alert('রিসেট করতে সমস্যা হয়েছে। DevTools → Application → Clear Storage চেষ্টা করুন।')
+            }
+          }}
+          className="w-full sm:w-auto rounded-xl bg-bd-red-600 text-white px-6 py-3 text-sm font-bold hover:bg-bd-red-700 transition-colors"
+        >
+          🗑️ সব ডেটা মুছে ফেলুন (Factory Reset)
+        </button>
+        <p className="mt-3 text-xs text-gray-400">
+          টিপস: নতুন ইউজার ইমেইল + পাসওয়ার্ড (৬ অক্ষর) দিয়ে সাইন আপ করবে → তাৎক্ষণিক লগইন → কোনো ইমেইল ভেরিফিকেশন নেই।
+        </p>
+      </section>
+
       {/* Saved indicator */}
       {showSaved && (
         <div className="fixed bottom-20 md:bottom-6 right-4 z-30 rounded-full bg-bd-green-700 px-5 py-2.5 text-white text-sm font-medium shadow-soft-lg">

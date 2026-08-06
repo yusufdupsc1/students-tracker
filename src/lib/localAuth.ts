@@ -130,16 +130,27 @@ export async function signUpLocal(
   if (existing) throw new Error('এই ইমেইল দিয়ে ইতিমধ্যে অ্যাকাউন্ট আছে। লগইন করুন।')
 
   const passwordHash = await hashPassword(password)
-  const schoolId = generateId()
+  // Use fixed 'school' id so it aligns with seedDatabase and Settings (single local school per device — simple, no multi-tenant complexity)
+  const schoolId = 'school'
   const userId = generateId()
 
-  const school: School = {
-    id: schoolId,
-    name: trimmedSchool,
-    village: '',
-    postOffice: '',
-    upazila: '',
-    district: '',
+  // Check if school already exists (e.g., seeded default school)
+  let school: School | undefined
+  try {
+    school = await db.school.get(schoolId)
+  } catch {}
+  if (school) {
+    // Update school name to the newly signed-up school's name
+    school = { ...school, name: trimmedSchool }
+  } else {
+    school = {
+      id: schoolId,
+      name: trimmedSchool,
+      village: '',
+      postOffice: '',
+      upazila: '',
+      district: '',
+    }
   }
 
   const user: LocalUser = {

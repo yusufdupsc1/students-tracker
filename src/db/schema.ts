@@ -9,6 +9,25 @@ export interface Snapshot {
   json: string // serialized Backup
 }
 
+// Local auth user stored entirely in browser (no Supabase)
+export interface LocalUser {
+  id: string // UUID
+  email: string // lowercased, unique
+  fullName: string
+  passwordHash: string // SHA-256 hex
+  role: 'admin' | 'teacher' | 'viewer'
+  schoolId: string // FK → School.id
+  createdAt: string
+  updatedAt: string
+}
+
+export interface LocalSession {
+  id?: number
+  userId: string
+  email: string
+  createdAt: string
+}
+
 export class AppDB extends Dexie {
   school!: Table<School, string>
   gradingScale!: Table<GradingScaleRow, number>
@@ -16,6 +35,7 @@ export class AppDB extends Dexie {
   students!: Table<Student, string>
   mtrRecords!: Table<MTRRecord, string>
   snapshots!: Table<Snapshot, number>
+  users!: Table<LocalUser, string>
 
   constructor() {
     super('bejkhonda-school')
@@ -50,8 +70,18 @@ export class AppDB extends Dexie {
       mtrRecords: 'schoolId, id, classId, studentId',
       snapshots: '++id, schoolId, createdAt'
     })
+    // Local auth: in-browser lite DB, no external Supabase needed.
+    // All data is created automatically when you open the site – persisted in IndexedDB.
+    this.version(4).stores({
+      school: 'id',
+      gradingScale: 'schoolId, minPercent',
+      classes: 'schoolId, id',
+      students: 'schoolId, id, classId, roll, &[classId+roll]',
+      mtrRecords: 'schoolId, id, classId, studentId',
+      snapshots: '++id, schoolId, createdAt',
+      users: 'id, &email, schoolId'
+    })
   }
 }
 
 export const db = new AppDB()
-

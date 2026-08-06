@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/schema'
-import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 import type { School, ClassConfig, GradingScaleRow, SubjectSlot } from '../types'
@@ -41,46 +40,20 @@ export default function Settings() {
   const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [savedAt, setSavedAt] = useState(0)
 
-  // --- School (single row) ---
+  // --- School (single row) — 100% local IndexedDB, no Supabase ---
   const schoolLive = useLiveQuery(() => db.school.get('school'))
   const [school, setSchool] = useState<School | null>(null)
   useEffect(() => {
     if (schoolLive && !school) setSchool(schoolLive)
   }, [schoolLive, school])
 
-  // Load school from Supabase if available
-  useEffect(() => {
-    if (!schoolId) return
-    ;(async () => {
-      try {
-        const { data } = await supabase.from('schools').select('*').eq('id', schoolId).single()
-        if ((data as any) && !school) {
-          setSchool({
-            id: (data as any).id,
-            name: (data as any).name,
-            village: (data as any).village || '',
-            postOffice: (data as any).post_office || '',
-            upazila: (data as any).upazila || '',
-            district: (data as any).district || ''
-          })
-        }
-      } catch {
-        // ignore
-      }
-    })()
-  }, [schoolId, school])
-
   const saveSchool = useDebouncedCallback((s: School) => {
     void db.school.put(s)
     setSavedAt(Date.now())
-    if (schoolId) {
-      ;(supabase as any).from('schools').update({
-        name: s.name,
-        village: s.village,
-        post_office: s.postOffice,
-        upazila: s.upazila,
-        district: s.district
-      }).eq('id', schoolId).then(() => {})
+    // Also keep per-user school copy in sync (for multi-school local)
+    if (schoolId && s.id !== schoolId) {
+      // If user has separate schoolId, keep that one too
+      void db.school.put({ ...s, id: schoolId }).catch(() => {})
     }
   }, 600)
   const onSchool = (patch: Partial<School>) => {
@@ -212,7 +185,7 @@ export default function Settings() {
           <Field label="উপজেলা" value={school?.upazila ?? ''} onChange={(v) => onSchool({ upazila: v })} />
           <Field label="জেলা" value={school?.district ?? ''} onChange={(v) => onSchool({ district: v })} />
         </div>
-        <p className="mt-4 text-xs text-gray-400 font-medium">পরিবর্তন স্বয়ংক্রিয়ভাবে সংরক্ষিত হয়।</p>
+        <p className="mt-4 text-xs text-gray-400 font-medium">পরিবর্তন স্বয়ংক্রিয়ভাবে লোকাল ডেটাবেসে সংরক্ষিত হয় (IndexedDB) — কোনো ইন্টারনেট লাগে না।</p>
       </section>
 
       {/* Grading scale */}
@@ -301,7 +274,7 @@ export default function Settings() {
           </p>
         )}
         <p className="mt-3 text-xs text-gray-400">
-          এই টেবিলটিই গ্রেডের একমাত্র উৎস (single source of truth)।
+          এই টেবিলটিই গ্রেডের একমাত্র উৎস (single source of truth) — লোকালেই সংরক্ষিত।
         </p>
       </section>
 

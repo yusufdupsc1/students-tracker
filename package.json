@@ -1,7 +1,7 @@
 {
   "name": "students-tracker",
   "private": false,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "Offline PWA for student result cards, MTR, and QR IDs (Bejkhonda school) — 100% local IndexedDB, no external DB",
   "scripts": {

@@ -51,6 +51,11 @@ export default {
           dark: '#A6851F'
         }
       },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+      },
       boxShadow: {
         'soft': '0 2px 15px -3px rgba(6, 78, 59, 0.08), 0 10px 20px -2px rgba(6, 78, 59, 0.04)',
         'soft-lg': '0 10px 25px -5px rgba(6, 78, 59, 0.1), 0 8px 10px -6px rgba(6, 78, 59, 0.04)',

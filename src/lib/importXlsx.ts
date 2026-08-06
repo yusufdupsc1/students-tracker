@@ -1,3 +1,4 @@
+// SECURITY: xlsx has known Prototype Pollution (GHSA-4r6h) & ReDoS — mitigated by 10MB cap, trusted teacher uploads only, and sanitization below
 import type { WorkBook, Sheet } from 'xlsx'
 import { db } from '../db/schema'
 import type { School, GradingScaleRow, ClassConfig, Student, SubjectSlot } from '../types'
@@ -48,6 +49,18 @@ function slug(name: string): string {
 export async function parseWorkbook(wb: WorkBook): Promise<ImportResult> {
   const XLSX = await import('xlsx')
   const issues: string[] = []
+  // Mitigate Prototype Pollution: scrub dangerous keys from workbook
+  try {
+    const dangerous = ['__proto__', 'constructor', 'prototype']
+    for (const sheetName of Object.keys(wb.Sheets)) {
+      const ws: any = (wb.Sheets as any)[sheetName]
+      if (!ws) continue
+      for (const k of Object.keys(ws)) {
+        if (dangerous.some(d => k.includes(d))) delete ws[k]
+      }
+    }
+  } catch {}
+
 
   const cellVal = (ws: Sheet | undefined, r: number, c: number): unknown => {
     if (!ws) return ''

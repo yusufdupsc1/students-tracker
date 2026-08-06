@@ -22,6 +22,7 @@ import {
 import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow } from '../types'
 import { Link } from 'react-router-dom'
+import { EmptyIllustration } from '../components/EmptyState'
 
 const EXCELLENT_PASS_RATE = 80
 const COLORS = ['#065f46', '#10b981', '#f59e0b', '#ef4444', '#6b7280']
@@ -192,12 +193,12 @@ export default function Dashboard() {
       </div>
 
       {isEmpty ? (
-        <div className="rounded-[1.5rem] border-2 border-dashed border-gray-200 bg-gray-50/50 p-12 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-white border border-gray-200 flex items-center justify-center mx-auto mb-4">◈</div>
-          <h3 className="font-semibold text-gray-900">এখনও কোনো শিক্ষার্থী নেই</h3>
-          <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">Roster থেকে হাতে লিখে যোগ করুন বা Excel/CSV/JSON থেকে ইমপোর্ট করুন — সব ক্লাস ১-১২ সাপোর্টেড</p>
-          <Link to="/app/roster" className="inline-flex mt-4 px-6 py-2.5 rounded-full bg-gray-900 text-white text-sm font-medium hover:bg-black transition-colors">
-            প্রথম শিক্ষার্থী যোগ করুন
+        <div className="rounded-[1.5rem] border-2 border-dashed border-gray-200 bg-gradient-to-br from-white via-gray-50/50 to-emerald-50/30 p-12 text-center">
+          <EmptyIllustration className="w-40 h-32" />
+          <h3 className="font-heading font-semibold text-gray-900 mt-4">এখনও কোনো শিক্ষার্থী নেই</h3>
+          <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto leading-relaxed">Roster থেকে হাতে লিখে যোগ করুন বা Excel/CSV/JSON থেকে ইমপোর্ট করুন — সব ক্লাস ১-১২ সাপোর্টেড। ডেটা ব্রাউজারে নিরাপদে থাকবে।</p>
+          <Link to="/app/roster" className="inline-flex mt-6 px-6 py-3 rounded-full bg-gray-900 text-white text-sm font-medium hover:bg-black hover:shadow-lg hover:-translate-y-0.5 transition-all">
+            প্রথম শিক্ষার্থী যোগ করুন →
           </Link>
         </div>
       ) : (

@@ -107,7 +107,8 @@ function readClassesAndStudents(wb) {
   for (const [sheetName, classId] of CLASS_SHEETS) {
     const ws = wb.Sheets[sheetName]
     if (!ws) {
-      console.warn(`sheet "${sheetName}" not found`)
+      // Only warn for core 1-5 sheets; 6-12 are optional until school provides them
+      if (classId <= 5) console.warn(`sheet "${sheetName}" not found`)
       continue
     }
     // Subject labels at row 5 (index 4), full marks at row 4 (index 3).

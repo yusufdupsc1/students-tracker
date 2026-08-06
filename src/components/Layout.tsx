@@ -4,6 +4,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db/schema'
 import { useAuth } from '../contexts/AuthContext'
 import { storageStatus } from '../lib/persistence'
+import { CommandPalette } from './CommandPalette'
 
 type NavItem = { to: string; label: string; icon: string; end?: boolean; badge?: string }
 
@@ -201,6 +202,9 @@ export default function Layout() {
         <a href="#app-main" className="skip-link sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-bd-green-700 focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
           মূল কনটেন্টে যান
         </a>
+        <div className="hidden md:flex justify-end p-2">
+          <CommandPalette />
+        </div>
         <main id="app-main" className="app-main flex-1 p-4 pb-24 md:pb-8 md:p-8 max-w-6xl w-full mx-auto">
           <Outlet />
         </main>

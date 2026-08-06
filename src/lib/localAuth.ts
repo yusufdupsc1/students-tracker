@@ -35,8 +35,9 @@ function toHex(buffer: ArrayBuffer): string {
     .join('')
 }
 
-export async function hashPassword(password: string): Promise<string> {
-  const enc = new TextEncoder().encode(password)
+export async function hashPassword(password: string, salt: string = ''): Promise<string> {
+  // Salt with email when available to prevent rainbow tables across schools sharing device
+  const enc = new TextEncoder().encode(salt ? `${salt.toLowerCase()}::${password}` : password)
   // Use Web Crypto if available (browser), fallback to simple hash in Node/tests
   if (typeof crypto !== 'undefined' && (crypto as any).subtle) {
     const buf = await (crypto as any).subtle.digest('SHA-256', enc)
@@ -129,7 +130,7 @@ export async function signUpLocal(
   const existing = await findUserByEmail(trimmedEmail)
   if (existing) throw new Error('এই ইমেইল দিয়ে ইতিমধ্যে অ্যাকাউন্ট আছে। লগইন করুন।')
 
-  const passwordHash = await hashPassword(password)
+  const passwordHash = await hashPassword(password, trimmedEmail)
   // Use fixed 'school' id so it aligns with seedDatabase and Settings (single local school per device — simple, no multi-tenant complexity)
   const schoolId = 'school'
   const userId = generateId()

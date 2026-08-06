@@ -4,6 +4,7 @@ import { db } from '../db/schema'
 import { useAuth } from '../contexts/AuthContext'
 import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 import type { School, ClassConfig, GradingScaleRow, SubjectSlot } from '../types'
+import { DarkModeToggle } from '../components/DarkModeToggle'
 
 function uid() {
   return crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2)
@@ -446,6 +447,11 @@ export default function Settings() {
             <div className="font-semibold text-bd-green-800">গ্রুপ (৯-১২)</div>
             <div className="text-xs text-gray-500 mt-1">Science / Arts / Commerce — Add Student ফর্মে দেখা যাবে</div>
             <input className="glass-input mt-2" value={((school as any)?.groups ?? []).join(', ')} onChange={(e) => onSchool({ groups: e.target.value.split(',').map(s=>s.trim()).filter(Boolean) } as any)} placeholder="Science, Arts, Commerce" />
+          </div>
+          <div className="rounded-xl border border-bd-green-100 p-4 bg-white">
+            <div className="font-semibold text-bd-green-800">থিম</div>
+            <div className="text-xs text-gray-500 mt-1">ডার্ক / লাইট — সিস্টেম অনুযায়ী</div>
+            <div className="mt-2"><DarkModeToggle /></div>
           </div>
           <div className="rounded-xl border border-bd-green-100 p-4 bg-white">
             <div className="font-semibold text-bd-green-800">লোগো URL</div>

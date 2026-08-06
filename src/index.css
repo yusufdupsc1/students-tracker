@@ -12,35 +12,35 @@
   font-style: normal;
   font-weight: 300;
   font-display: swap;
-  src: url('./assets/fonts/HindSiliguri-Light.ttf') format('truetype');
+  src: url('./assets/fonts/HindSiliguri-Light.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Hind Siliguri';
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('./assets/fonts/HindSiliguri-Regular.ttf') format('truetype');
+  src: url('./assets/fonts/HindSiliguri-Regular.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Hind Siliguri';
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('./assets/fonts/HindSiliguri-Medium.ttf') format('truetype');
+  src: url('./assets/fonts/HindSiliguri-Medium.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Hind Siliguri';
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('./assets/fonts/HindSiliguri-SemiBold.ttf') format('truetype');
+  src: url('./assets/fonts/HindSiliguri-SemiBold.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Hind Siliguri';
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('./assets/fonts/HindSiliguri-Bold.ttf') format('truetype');
+  src: url('./assets/fonts/HindSiliguri-Bold.woff2') format('woff2');
 }
 
 /* Noto Sans Bengali — fallback only (self-hosted, works offline). */

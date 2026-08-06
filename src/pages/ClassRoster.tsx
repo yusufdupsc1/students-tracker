@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow } from '../types'
 import { CLASS_LIST, CLASS_NAMES } from '../lib/classes'
+import { StudentFormModal, emptyForm, studentToForm, type FormState } from '../components/StudentFormModal'
 
 const RESULT_STYLE: Record<'Pass' | 'Fail' | 'Incomplete', string> = {
   Pass: 'bg-bd-green-100 text-bd-green-800 border-bd-green-300',
@@ -35,185 +36,6 @@ function ResultBadge({ result }: { result: 'Pass' | 'Fail' | 'Incomplete' }) {
   )
 }
 
-type FormState = {
-  id: string | null
-  roll: string
-  name: string
-  guardian: string
-  village: string
-  attendance: string
-  marks: Record<string, string>
-}
-
-function emptyForm(active: { name: string }[]): FormState {
-  const marks: Record<string, string> = {}
-  for (const s of active) marks[s.name] = ''
-  return { id: null, roll: '', name: '', guardian: '', village: '', attendance: '', marks }
-}
-
-function studentToForm(s: Student, active: { name: string }[]): FormState {
-  const marks: Record<string, string> = {}
-  for (const sub of active) {
-    const m = s.marks?.[sub.name]
-    marks[sub.name] = m == null ? '' : String(m)
-  }
-  return {
-    id: s.id,
-    roll: String(s.roll),
-    name: s.name,
-    guardian: s.guardian ?? '',
-    village: s.village ?? '',
-    attendance: s.attendance != null ? String(s.attendance) : '',
-    marks
-  }
-}
-
-function StudentFormModal({
-  form,
-  setForm,
-  active,
-  onClose,
-  onSave,
-  error
-}: {
-  form: FormState
-  setForm: (f: FormState) => void
-  active: { name: string; fullMarks: number }[]
-  onClose: () => void
-  onSave: () => void
-  error: string
-}) {
-  const setMark = (name: string, value: string) =>
-    setForm({ ...form, marks: { ...form.marks, [name]: value } })
-
-  return (
-    <div className="fixed inset-0 z-40 flex items-end md:items-center justify-center bg-black/40 p-0 md:p-4">
-      <div className="bg-white w-full md:max-w-lg md:rounded-xl rounded-t-xl max-h-[92vh] flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-          <h2 className="text-lg font-heading font-semibold text-bd-green-900">
-            {form.id ? 'শিক্ষার্থী সম্পাদনা' : 'নতুন শিক্ষার্থী'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 text-2xl leading-none px-2"
-            aria-label="বন্ধ করুন"
-          >
-            ×
-          </button>
-        </div>
-
-        <div className="overflow-y-auto px-4 py-3 space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <label className="text-sm">
-              <span className="text-gray-600">রোল</span>
-              <input
-                type="number"
-                min={1}
-                inputMode="numeric"
-                value={form.roll}
-                onChange={(e) => setForm({ ...form, roll: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-              />
-            </label>
-            <label className="text-sm">
-              <span className="text-gray-600">উপস্থিতি %</span>
-              <input
-                type="number"
-                min={0}
-                max={100}
-                inputMode="decimal"
-                value={form.attendance}
-                onChange={(e) => setForm({ ...form, attendance: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-              />
-            </label>
-          </div>
-
-          <label className="block text-sm">
-            <span className="text-gray-600">নাম</span>
-            <input
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-            />
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="text-sm">
-              <span className="text-gray-600">অভিভাবক</span>
-              <input
-                value={form.guardian}
-                onChange={(e) => setForm({ ...form, guardian: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-              />
-            </label>
-            <label className="text-sm">
-              <span className="text-gray-600">গ্রাম</span>
-              <input
-                value={form.village}
-                onChange={(e) => setForm({ ...form, village: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-              />
-            </label>
-          </div>
-
-          <div className="pt-1">
-            <div className="text-sm font-medium text-gray-700 mb-2">নম্বর (প্রতি বিষয়)</div>
-            <div className="grid grid-cols-2 gap-3">
-              {active.map((s) => {
-                const raw = form.marks[s.name]?.trim() ?? ''
-                const m = raw === '' ? null : Number(raw)
-                const pct = m == null || !Number.isFinite(m) ? null : (m / s.fullMarks) * 100
-                return (
-                  <label key={s.name} className="text-sm">
-                    <span className="text-gray-600">
-                      {s.name} <span className="text-gray-400">/ {s.fullMarks}</span>
-                    </span>
-                    <div className="mt-1 flex items-center gap-2">
-                      <input
-                        type="number"
-                        min={0}
-                        inputMode="decimal"
-                        value={raw}
-                        placeholder="—"
-                        onChange={(e) => setMark(s.name, e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2"
-                      />
-                      {pct != null && (
-                        <span className="text-xs text-gray-500 whitespace-nowrap">{pct.toFixed(0)}%</span>
-                      )}
-                    </div>
-                  </label>
-                )
-              })}
-            </div>
-          </div>
-
-          {error && (
-            <div className="rounded-lg bg-bd-red-50 border border-bd-red-300 text-bd-red-700 text-sm px-3 py-2">
-              {error}
-            </div>
-          )}
-        </div>
-
-        <div className="flex gap-2 px-4 py-3 border-t border-gray-200">
-          <button
-            onClick={onClose}
-            className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700"
-          >
-            বাতিল
-          </button>
-          <button
-            onClick={onSave}
-            className="btn-primary flex-1"
-          >
-            সংরক্ষণ
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function ClassRoster() {
   const { profile } = useAuth()
   const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
@@ -225,6 +47,12 @@ export default function ClassRoster() {
     () => schoolId ? db.classes.where('schoolId').equals(schoolId).and(c => c.id === classId).first() : db.classes.get(classId),
     [schoolId, classId]
   )
+  // For modal: if user changes class inside modal, show that class's subjects
+  const modalClassId = modal?.classId ?? classId
+  const modalClassConfig = useLiveQuery(
+    () => (schoolId ? db.classes.where('schoolId').equals(schoolId).and((c) => c.id === modalClassId).first() : db.classes.get(modalClassId)),
+    [schoolId, modalClassId]
+  )
   const students = useLiveQuery(
     () => schoolId ? db.students.where('schoolId').equals(schoolId).and(s => s.classId === classId).toArray() : db.students.where('classId').equals(classId).toArray(),
     [schoolId, classId]
@@ -235,8 +63,11 @@ export default function ClassRoster() {
   )
 
   const active = useMemo<{ name: string; fullMarks: number }[]>(
-    () => (classConfig ? getActiveSubjects(classConfig) : []),
-    [classConfig]
+    () => {
+      const cfg = modal ? modalClassConfig ?? classConfig : classConfig
+      return cfg ? getActiveSubjects(cfg) : []
+    },
+    [classConfig, modalClassConfig, modal]
   )
 
   const sorted = useMemo(
@@ -254,16 +85,21 @@ export default function ClassRoster() {
 
   function openAdd() {
     setError('')
-    setModal(emptyForm(active))
+    setModal(emptyForm(classId, active))
   }
 
   function openEdit(s: Student) {
     setError('')
+    // Need active for that student's class? Use current active but also handle marks for that class
     setModal(studentToForm(s, active))
   }
 
   async function handleSave() {
     if (!modal) return
+    const targetClassId = modal.classId
+    // Need to get active subjects for target class (might be different than current tab if user changed dropdown)
+    const targetConfig = await db.classes.get(targetClassId)
+    const targetActive = targetConfig ? getActiveSubjects(targetConfig) : active
     const rollNum = Number(modal.roll)
     if (!Number.isInteger(rollNum) || rollNum < 1) {
       setError('রোল সঠিক নয় (১ বা তার বেশি হতে হবে)')
@@ -282,7 +118,7 @@ export default function ClassRoster() {
     }
 
     const marks: Record<string, number | null> = {}
-    for (const s of active) {
+    for (const s of targetActive) {
       const raw = modal.marks[s.name]?.trim() ?? ''
       if (raw === '') {
         marks[s.name] = null
@@ -304,10 +140,10 @@ export default function ClassRoster() {
       }
     }
 
-    const id = `${classId}_${rollNum}`
+    const id = `${targetClassId}_${rollNum}`
     const student: Student = {
       id,
-      classId,
+      classId: targetClassId,
       roll: rollNum,
       name: modal.name.trim(),
       guardian: modal.guardian.trim() || undefined,
@@ -325,9 +161,11 @@ export default function ClassRoster() {
       })
       setModal(null)
       setError('')
+      // If we added to a different class than current tab, switch to it
+      if (targetClassId !== classId) setClassId(targetClassId)
     } catch (e) {
       if (e instanceof Error && e.name === 'ConstraintError') {
-        setError(`রোল ${rollNum} ইতিমধ্যে ব্যবহৃত`)
+        setError(`রোল ${rollNum} ইতিমধ্যে ব্যবহৃত (ক্লাস ${CLASS_NAMES[targetClassId]})`)
       } else {
         setError('সংরক্ষণে সমস্যা হয়েছে')
       }
@@ -380,9 +218,9 @@ export default function ClassRoster() {
         ))}
       </div>
 
-      <div className="no-print mb-4 flex items-center justify-between">
+      <div className="no-print mb-4 flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-gray-500">
-          মোট শিক্ষার্থী: {sorted.length} | পাসের সীমা: {threshold}%
+          মোট শিক্ষার্থী: {sorted.length} | পাসের সীমা: {threshold}% | <span className="text-bd-green-700 font-medium">ম্যানুয়াল + ইমপোর্ট উভয়ই</span>
         </p>
         <button
           onClick={openAdd}
@@ -395,6 +233,7 @@ export default function ClassRoster() {
       {sorted.length === 0 ? (
         <div className="glass-card-subtle p-8 text-center border-dashed">
           <p className="text-gray-600 font-medium">এই ক্লাসে এখনও কোনো শিক্ষার্থী যোগ করা হয়নি।</p>
+          <p className="text-xs text-gray-400 mt-1">ম্যানুয়াল যোগ করুন বা Import পেজ থেকে .xlsx/.csv/.json ইমপোর্ট করুন</p>
           <button
             onClick={openAdd}
             className="btn-secondary mt-3"
@@ -555,6 +394,7 @@ export default function ClassRoster() {
           }}
           onSave={handleSave}
           error={error}
+          classNames={CLASS_NAMES}
         />
       )}
     </section>

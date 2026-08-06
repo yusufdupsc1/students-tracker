@@ -7,6 +7,7 @@
   "scripts": {
     "seed": "node scripts/seed-from-xlsx.mjs",
     "seed:admin": "node scripts/seed-admin.mjs",
+    "reset:credentials": "node scripts/reset-credentials.mjs",
     "predev": "node scripts/seed-from-xlsx.mjs",
     "prebuild": "node scripts/seed-from-xlsx.mjs",
     "dev": "vite",
@@ -46,11 +47,12 @@
     "typescript": "^5.5.4",
     "vite": "^5.4.8",
     "vite-plugin-pwa": "^0.20.5",
-    "vitest": "^2.1.2"
+    "vitest": "^2.1.2",
+    "wait-on": "^8.0.3"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/neo/students-tracker.git"
+    "url": "https://github.com/yusufdupsc1/students-tracker.git"
   },
   "license": "MIT",
   "keywords": [

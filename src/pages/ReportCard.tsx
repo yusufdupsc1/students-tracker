@@ -13,7 +13,6 @@ import {
 } from '../lib/calculations'
 import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow, School } from '../types'
-import { CLASS_LIST, CLASS_NAMES } from '../lib/classes'
 
 function subjectRow(
   name: string,
@@ -166,6 +165,7 @@ export default function ReportCard() {
   const [studentId, setStudentId] = useState<string>(params.get('studentId') || '')
   const [batch, setBatch] = useState(false)
 
+  const allClasses = useLiveQuery(() => db.classes.orderBy('id').toArray(), [], [] as ClassConfig[])
   const classConfig = useLiveQuery(
     () => schoolId ? db.classes.where('schoolId').equals(schoolId).and(c => c.id === classId).first() : db.classes.get(classId),
     [schoolId, classId]
@@ -212,15 +212,15 @@ export default function ReportCard() {
         <h1 className="text-3xl font-heading font-bold text-bd-green-900 tracking-tight">ফলাফল কার্ড</h1>
         <div className="flex flex-wrap gap-2 items-center">
           <div className="flex gap-1.5">
-            {CLASS_LIST.map((c) => (
+            {(allClasses.length ? allClasses : []).map((cls) => (
               <button
-                key={c}
-                onClick={() => setClassId(c)}
+                key={cls.id}
+                onClick={() => setClassId(cls.id)}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
-                  classId === c ? 'tab-active' : 'tab-inactive'
+                  classId === cls.id ? 'tab-active' : 'tab-inactive'
                 }`}
               >
-                {CLASS_NAMES[c]}
+                {cls.name}
               </button>
             ))}
           </div>

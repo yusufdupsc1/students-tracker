@@ -205,6 +205,14 @@ export default function Import() {
       village: addModal.village.trim() || undefined,
       attendance,
       marks,
+      section: addModal.section.trim() || undefined,
+      group: addModal.group.trim() || undefined,
+      gender: (addModal.gender as any) || undefined,
+      dob: addModal.dob.trim() || undefined,
+      phone: addModal.phone.trim() || undefined,
+      bloodGroup: addModal.bloodGroup.trim() || undefined,
+      religion: addModal.religion.trim() || undefined,
+      address: addModal.address.trim() || undefined,
     }
     try {
       await db.transaction('rw', db.students, db.mtrRecords, async () => {

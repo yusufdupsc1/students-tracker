@@ -11,6 +11,72 @@ function uid() {
 
 type ScaleRowLocal = GradingScaleRow & { _uid: string }
 
+
+function AddNewClassForm({ classes }: { classes: ClassConfig[] }) {
+  const [name, setName] = useState('')
+  const [busy, setBusy] = useState(false)
+  const nextId = classes.length ? Math.max(...classes.map(c => c.id)) + 1 : 1
+  async function onAdd() {
+    const trimmed = name.trim()
+    if (!trimmed) {
+      alert('ক্লাসের নাম দিন')
+      return
+    }
+    if (classes.some(c => c.name.toLowerCase() === trimmed.toLowerCase())) {
+      alert('এই নামে ক্লাস ইতিমধ্যে আছে')
+      return
+    }
+    setBusy(true)
+    try {
+      const newClass: ClassConfig = {
+        id: nextId,
+        name: trimmed,
+        subjects: [
+          { id: 'bangla-' + Date.now(), name: 'বাংলা', fullMarks: 100 },
+          { id: 'english-' + Date.now(), name: 'English', fullMarks: 100 },
+          { id: 'math-' + Date.now(), name: 'গণিত', fullMarks: 100 },
+        ],
+        schoolId: 'school',
+      }
+      await db.classes.put(newClass)
+      setName('')
+    } catch (e) {
+      alert('যোগ করতে সমস্যা')
+    } finally {
+      setBusy(false)
+    }
+  }
+  async function onDelete(id: number) {
+    const cls = classes.find(c => c.id === id)
+    if (!cls) return
+    if (!window.confirm(`ক্লাস ${cls.name} (${id}) মুছবেন? এর শিক্ষার্থীরা থাকলে orphan হবে।`)) return
+    if (!window.confirm('নিশ্চিত? মুছে ফেলা শিক্ষার্থী ফিরে পাবেন না।')) return
+    await db.classes.delete(id)
+  }
+  return (
+    <div>
+      <div className="flex gap-2">
+        <input value={name} onChange={e => setName(e.target.value)} placeholder={`নতুন ক্লাস নাম (উদা: ত্রয়োদশ, প্লে, ${nextId})`} className="glass-input flex-1" />
+        <button onClick={onAdd} disabled={busy} className="btn-primary whitespace-nowrap">
+          {busy ? '...' : `+ ক্লাস ${nextId}`}
+        </button>
+      </div>
+      {classes.length > 12 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {classes.filter(c => c.id > 12).map(c => (
+            <span key={c.id} className="inline-flex items-center gap-2 rounded-full border border-bd-green-300 bg-white px-3 py-1.5 text-xs font-medium">
+              {c.name} ({c.id})
+              <button onClick={() => onDelete(c.id)} className="text-bd-red-600 hover:text-bd-red-800">×</button>
+            </span>
+          ))}
+        </div>
+      )}
+      <p className="mt-2 text-xs text-gray-400">১-১২ ডিফল্ট, এর বাইরে যেকোনো নামে ক্লাস যোগ করা যায় — Roster/Report/Import সবখানে দেখা যাবে।</p>
+    </div>
+  )
+}
+
+
 function Field({
   label,
   value,
@@ -175,17 +241,34 @@ export default function Settings() {
     <div className="space-y-6">
       <h1 className="text-3xl font-heading font-bold text-bd-green-900 tracking-tight">সেটিংস</h1>
 
-      {/* School info */}
+      {/* School info — extended for goal: complete school profile */}
       <section className="glass-card p-6">
-        <h2 className="text-lg font-heading font-semibold mb-4 text-bd-green-900">স্কুলের তথ্য</h2>
+        <h2 className="text-lg font-heading font-semibold mb-4 text-bd-green-900">স্কুলের তথ্য — প্রোফাইল</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="স্কুলের নাম" value={school?.name ?? ''} onChange={(v) => onSchool({ name: v })} />
+          <Field label="প্রধান শিক্ষক" value={(school as any)?.principalName ?? ''} onChange={(v) => onSchool({ principalName: v } as any)} />
           <Field label="গ্রাম" value={school?.village ?? ''} onChange={(v) => onSchool({ village: v })} />
           <Field label="ডাকঘর" value={school?.postOffice ?? ''} onChange={(v) => onSchool({ postOffice: v })} />
           <Field label="উপজেলা" value={school?.upazila ?? ''} onChange={(v) => onSchool({ upazila: v })} />
           <Field label="জেলা" value={school?.district ?? ''} onChange={(v) => onSchool({ district: v })} />
+          <Field label="EIIN" value={(school as any)?.eiin ?? ''} onChange={(v) => onSchool({ eiin: v } as any)} />
+          <Field label="স্থাপিত" value={(school as any)?.establishedYear ?? ''} onChange={(v) => onSchool({ establishedYear: v } as any)} />
+          <Field label="ফোন" value={(school as any)?.phone ?? ''} onChange={(v) => onSchool({ phone: v } as any)} />
+          <Field label="ইমেইল" value={(school as any)?.email ?? ''} onChange={(v) => onSchool({ email: v } as any)} />
+          <Field label="শিক্ষাবর্ষ" value={(school as any)?.academicYear ?? ''} onChange={(v) => onSchool({ academicYear: v } as any)} />
+          <Field label="সেশন" value={(school as any)?.session ?? ''} onChange={(v) => onSchool({ session: v } as any)} />
         </div>
-        <p className="mt-4 text-xs text-gray-400 font-medium">পরিবর্তন স্বয়ংক্রিয়ভাবে লোকাল ডেটাবেসে সংরক্ষিত হয় (IndexedDB) — কোনো ইন্টারনেট লাগে না।</p>
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <label className="block">
+            <span className="text-sm font-medium text-gray-600">পরীক্ষা টার্ম (কমা দিয়ে আলাদা)</span>
+            <input className="glass-input mt-1.5" value={((school as any)?.examTerms ?? []).join(', ')} onChange={(e) => onSchool({ examTerms: e.target.value.split(',').map(s=>s.trim()).filter(Boolean) } as any)} placeholder="প্রান্তিক-১, প্রান্তিক-২, বার্ষিক" />
+          </label>
+          <label className="block">
+            <span className="text-sm font-medium text-gray-600">শাখা (কমা দিয়ে)</span>
+            <input className="glass-input mt-1.5" value={((school as any)?.sections ?? []).join(', ')} onChange={(e) => onSchool({ sections: e.target.value.split(',').map(s=>s.trim()).filter(Boolean) } as any)} placeholder="ক, খ, গ" />
+          </label>
+        </div>
+        <p className="mt-4 text-xs text-gray-400 font-medium">পরিবর্তন স্বয়ংক্রিয়ভাবে লোকাল ডেটাবেসে সংরক্ষিত — সব ফর্মে (Add Student, Report) প্রতিফলিত হয়।</p>
       </section>
 
       {/* Grading scale */}
@@ -346,6 +429,31 @@ export default function Settings() {
             </div>
           </div>
         ))}
+      </section>
+
+      {/* Add New Class — dynamic, aligns with goal: any class beyond 12 */}
+      <section className="glass-card p-6 border-2 border-bd-green-200 bg-bd-green-50/30">
+        <h2 className="text-lg font-heading font-semibold mb-2 text-bd-green-900">নতুন ক্লাস যোগ করুন</h2>
+        <p className="text-sm text-gray-500 mb-3">যেকোনো নতুন ক্লাস (১৩+, প্লে, নার্সারি, কাস্টম) যোগ করুন — সাথে বিষয় ও পূর্ণমান ঠিক করুন। সব পেজে (Roster, Report, MTR, QR) তাৎক্ষণিক দেখা যাবে।</p>
+        <AddNewClassForm classes={classes} />
+      </section>
+
+      {/* Other Options — aligning with school goal */}
+      <section className="glass-card p-6">
+        <h2 className="text-lg font-heading font-semibold mb-3 text-bd-green-900">অন্যান্য অপশন — স্কুল ম্যানেজমেন্ট</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div className="rounded-xl border border-bd-green-100 p-4 bg-white">
+            <div className="font-semibold text-bd-green-800">গ্রুপ (৯-১২)</div>
+            <div className="text-xs text-gray-500 mt-1">Science / Arts / Commerce — Add Student ফর্মে দেখা যাবে</div>
+            <input className="glass-input mt-2" value={((school as any)?.groups ?? []).join(', ')} onChange={(e) => onSchool({ groups: e.target.value.split(',').map(s=>s.trim()).filter(Boolean) } as any)} placeholder="Science, Arts, Commerce" />
+          </div>
+          <div className="rounded-xl border border-bd-green-100 p-4 bg-white">
+            <div className="font-semibold text-bd-green-800">লোগো URL</div>
+            <div className="text-xs text-gray-500 mt-1">প্রিন্ট কার্ডে লোগো দেখাতে URL দিন (ঐচ্ছিক)</div>
+            <input className="glass-input mt-2" value={(school as any)?.logoUrl ?? ''} onChange={(e) => onSchool({ logoUrl: e.target.value } as any)} placeholder="https://..." />
+          </div>
+        </div>
+        <div className="mt-3 text-xs text-gray-400">এই অপশনগুলো Add Student, Report Card, MTR, QR — সবখানে প্রযোজ্য।</div>
       </section>
 
       {/* Factory Reset — local lite DB */}

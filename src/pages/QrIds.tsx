@@ -4,12 +4,13 @@ import { db } from '../db/schema'
 import { useAuth } from '../contexts/AuthContext'
 import QRCode from 'qrcode'
 
-import { CLASS_LIST, CLASS_NAMES } from '../lib/classes'
+import { CLASS_NAMES } from '../lib/classes'
 
 export default function QrIds() {
   const { profile } = useAuth()
   const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [classId, setClassId] = useState(1)
+  const allClasses = useLiveQuery(() => db.classes.orderBy('id').toArray(), [], [] as any[])
   const [qrDataUrls, setQrDataUrls] = useState<Record<string, string>>({})
 
   const students = useLiveQuery(
@@ -41,17 +42,17 @@ export default function QrIds() {
       <h1 className="text-3xl font-heading font-bold text-bd-green-900 mb-5 tracking-tight">QR আইডি</h1>
 
       <div className="flex flex-wrap gap-2 mb-6">
-        {CLASS_LIST.map((c) => (
+        {(allClasses.length ? allClasses : []).map((cls) => (
           <button
-            key={c}
-            onClick={() => setClassId(c)}
+            key={cls.id}
+            onClick={() => setClassId(cls.id)}
             className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
-              classId === c
+              classId === cls.id
                 ? 'tab-active'
                 : 'tab-inactive'
             }`}
           >
-            {CLASS_NAMES[c]}
+            {cls.name}
           </button>
         ))}
       </div>

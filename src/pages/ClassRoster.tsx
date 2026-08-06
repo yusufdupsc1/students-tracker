@@ -12,7 +12,7 @@ import {
 } from '../lib/calculations'
 import { useAuth } from '../contexts/AuthContext'
 import type { Student, ClassConfig, GradingScaleRow } from '../types'
-import { CLASS_LIST, CLASS_NAMES } from '../lib/classes'
+import { CLASS_NAMES } from '../lib/classes'
 import { StudentFormModal, emptyForm, studentToForm, type FormState } from '../components/StudentFormModal'
 
 const RESULT_STYLE: Record<'Pass' | 'Fail' | 'Incomplete', string> = {
@@ -43,6 +43,7 @@ export default function ClassRoster() {
   const [modal, setModal] = useState<FormState | null>(null)
   const [error, setError] = useState('')
 
+  const allClasses = useLiveQuery(() => db.classes.orderBy('id').toArray(), [], [] as ClassConfig[])
   const classConfig = useLiveQuery(
     () => schoolId ? db.classes.where('schoolId').equals(schoolId).and(c => c.id === classId).first() : db.classes.get(classId),
     [schoolId, classId]
@@ -199,21 +200,21 @@ export default function ClassRoster() {
     <section>
       <h1 className="text-2xl font-heading font-bold text-bd-green-900 mb-4">শ্রেণি তালিকা</h1>
 
-      {/* Class tabs */}
+      {/* Class tabs — dynamic (1-12 + custom) */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {CLASS_LIST.map((c) => (
+        {(allClasses.length ? allClasses : []).map((cls) => (
           <button
-            key={c}
+            key={cls.id}
             onClick={() => {
-              setClassId(c)
+              setClassId(cls.id)
               setModal(null)
               setError('')
             }}
             className={`px-3 py-2 rounded-lg text-sm border ${
-              classId === c ? 'tab-active' : 'tab-inactive'
+              classId === cls.id ? 'tab-active' : 'tab-inactive'
             }`}
           >
-            {CLASS_NAMES[c]}
+            {cls.name}
           </button>
         ))}
       </div>

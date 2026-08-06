@@ -9,13 +9,38 @@ export type FormState = {
   guardian: string
   village: string
   attendance: string
+  section: string
+  group: string
+  gender: string
+  dob: string
+  phone: string
+  bloodGroup: string
+  religion: string
+  address: string
   marks: Record<string, string>
 }
 
 export function emptyForm(classId: number, active: { name: string }[]): FormState {
   const marks: Record<string, string> = {}
   for (const s of active) marks[s.name] = ''
-  return { id: null, classId, roll: '', name: '', guardian: '', village: '', attendance: '', marks }
+  return {
+    id: null,
+    classId,
+    roll: '',
+    name: '',
+    guardian: '',
+    village: '',
+    attendance: '',
+    section: '',
+    group: '',
+    gender: '',
+    dob: '',
+    phone: '',
+    bloodGroup: '',
+    religion: '',
+    address: '',
+    marks,
+  }
 }
 
 export function studentToForm(s: Student, active: { name: string }[]): FormState {
@@ -32,6 +57,14 @@ export function studentToForm(s: Student, active: { name: string }[]): FormState
     guardian: s.guardian ?? '',
     village: s.village ?? '',
     attendance: s.attendance != null ? String(s.attendance) : '',
+    section: (s as any).section ?? '',
+    group: (s as any).group ?? '',
+    gender: (s as any).gender ?? '',
+    dob: (s as any).dob ?? '',
+    phone: (s as any).phone ?? '',
+    bloodGroup: (s as any).bloodGroup ?? '',
+    religion: (s as any).religion ?? '',
+    address: (s as any).address ?? '',
     marks,
   }
 }
@@ -55,7 +88,6 @@ export function StudentFormModal({
 }) {
   const setMark = (name: string, value: string) => setForm({ ...form, marks: { ...form.marks, [name]: value } })
 
-  // Auto-focus trap: close on Esc
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -64,9 +96,17 @@ export function StudentFormModal({
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
+  // Build dynamic class options from classNames prop or fallback 1-12
+  const classOptions = classNames
+    ? Object.keys(classNames)
+        .map(Number)
+        .filter((n) => n > 0 && Number.isInteger(n))
+        .sort((a, b) => a - b)
+    : Array.from({ length: 12 }, (_, i) => i + 1)
+
   return (
     <div className="fixed inset-0 z-40 flex items-end md:items-center justify-center bg-black/40 p-0 md:p-4">
-      <div className="bg-white w-full md:max-w-lg md:rounded-xl rounded-t-xl max-h-[92vh] flex flex-col overflow-hidden">
+      <div className="bg-white w-full md:max-w-2xl md:rounded-xl rounded-t-xl max-h-[95vh] flex flex-col overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
           <h2 className="text-lg font-heading font-semibold text-bd-green-900">
             {form.id ? 'শিক্ষার্থী সম্পাদনা' : 'নতুন শিক্ষার্থী'}{' '}
@@ -77,16 +117,17 @@ export function StudentFormModal({
           </button>
         </div>
 
-        <div className="overflow-y-auto px-4 py-3 space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+        <div className="overflow-y-auto px-4 py-3 space-y-4">
+          {/* Academic core */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             <label className="text-sm">
-              <span className="text-gray-600">ক্লাস</span>
+              <span className="text-gray-600">ক্লাস *</span>
               <select
                 value={String(form.classId)}
                 onChange={(e) => setForm({ ...form, classId: Number(e.target.value) })}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white"
               >
-                {Array.from({ length: 12 }, (_, i) => i + 1).map((c) => (
+                {classOptions.map((c) => (
                   <option key={c} value={c}>
                     {classNames?.[c] ?? `ক্লাস ${c}`} ({c})
                   </option>
@@ -94,7 +135,7 @@ export function StudentFormModal({
               </select>
             </label>
             <label className="text-sm">
-              <span className="text-gray-600">রোল</span>
+              <span className="text-gray-600">রোল *</span>
               <input
                 type="number"
                 min={1}
@@ -104,6 +145,137 @@ export function StudentFormModal({
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
                 placeholder="1"
               />
+            </label>
+            <label className="text-sm">
+              <span className="text-gray-600">শাখা (Section)</span>
+              <select
+                value={form.section}
+                onChange={(e) => setForm({ ...form, section: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white"
+              >
+                <option value="">—</option>
+                <option value="ক">ক</option>
+                <option value="খ">খ</option>
+                <option value="গ">গ</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <label className="text-sm">
+              <span className="text-gray-600">গ্রুপ (9-12)</span>
+              <select
+                value={form.group}
+                onChange={(e) => setForm({ ...form, group: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white"
+              >
+                <option value="">—</option>
+                <option value="Science">Science</option>
+                <option value="Arts">Arts</option>
+                <option value="Commerce">Commerce</option>
+                <option value="General">General</option>
+              </select>
+            </label>
+            <label className="text-sm">
+              <span className="text-gray-600">লিঙ্গ</span>
+              <select
+                value={form.gender}
+                onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white"
+              >
+                <option value="">—</option>
+                <option value="male">ছেলে</option>
+                <option value="female">মেয়ে</option>
+                <option value="other">অন্যান্য</option>
+              </select>
+            </label>
+            <label className="text-sm">
+              <span className="text-gray-600">জন্ম তারিখ</span>
+              <input
+                type="date"
+                value={form.dob}
+                onChange={(e) => setForm({ ...form, dob: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+              />
+            </label>
+          </div>
+
+          <label className="block text-sm">
+            <span className="text-gray-600">নাম *</span>
+            <input
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+              placeholder="মোঃ রহিম"
+            />
+          </label>
+
+          <div className="grid grid-cols-2 gap-3">
+            <label className="text-sm">
+              <span className="text-gray-600">অভিভাবক</span>
+              <input
+                value={form.guardian}
+                onChange={(e) => setForm({ ...form, guardian: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                placeholder="পিতার নাম"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="text-gray-600">ফোন</span>
+              <input
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                placeholder="01XXXXXXXXX"
+              />
+            </label>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <label className="text-sm">
+              <span className="text-gray-600">গ্রাম</span>
+              <input
+                value={form.village}
+                onChange={(e) => setForm({ ...form, village: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+                placeholder="বেজখণ্ড"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="text-gray-600">রক্তের গ্রুপ</span>
+              <select
+                value={form.bloodGroup}
+                onChange={(e) => setForm({ ...form, bloodGroup: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white"
+              >
+                <option value="">—</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+            </label>
+            <label className="text-sm">
+              <span className="text-gray-600">ধর্ম</span>
+              <select
+                value={form.religion}
+                onChange={(e) => setForm({ ...form, religion: e.target.value })}
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 bg-white"
+              >
+                <option value="">—</option>
+                <option value="Islam">Islam</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Christian">Christian</option>
+                <option value="Buddhist">Buddhist</option>
+                <option value="Other">Other</option>
+              </select>
             </label>
           </div>
 
@@ -122,38 +294,18 @@ export function StudentFormModal({
               />
             </label>
             <label className="text-sm">
-              <span className="text-gray-600">গ্রাম</span>
+              <span className="text-gray-600">ঠিকানা</span>
               <input
-                value={form.village}
-                onChange={(e) => setForm({ ...form, village: e.target.value })}
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
                 className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-                placeholder="বেজখণ্ড"
+                placeholder="বাড়ি/রাস্তা"
               />
             </label>
           </div>
 
-          <label className="block text-sm">
-            <span className="text-gray-600">নাম *</span>
-            <input
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-              placeholder="মোঃ রহিম"
-            />
-          </label>
-
-          <label className="block text-sm">
-            <span className="text-gray-600">অভিভাবক</span>
-            <input
-              value={form.guardian}
-              onChange={(e) => setForm({ ...form, guardian: e.target.value })}
-              className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-              placeholder="পিতার নাম"
-            />
-          </label>
-
-          <div className="pt-1">
-            <div className="text-sm font-medium text-gray-700 mb-2">নম্বর (প্রতি বিষয়)</div>
+          <div className="pt-2 border-t border-gray-100">
+            <div className="text-sm font-medium text-gray-700 mb-2">নম্বর (প্রতি বিষয়) — সব ক্লাস 1-12 এর জন্য</div>
             {active.length === 0 ? (
               <p className="text-xs text-gray-400">এই ক্লাসে কোনো সক্রিয় বিষয় নেই — Settings থেকে বিষয় যোগ করুন।</p>
             ) : (

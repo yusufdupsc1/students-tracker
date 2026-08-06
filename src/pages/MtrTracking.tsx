@@ -5,7 +5,6 @@ import { useDebouncedCallback } from '../hooks/useDebouncedCallback'
 import { useAuth } from '../contexts/AuthContext'
 import type { Student, MTRRecord, MTRSkillStatus, School } from '../types'
 
-import { CLASS_LIST, CLASS_NAMES } from '../lib/classes'
 
 type SkillKey = 'banglaReading' | 'mathFourRules' | 'englishReading'
 const SKILLS: { key: SkillKey; label: string }[] = [
@@ -69,6 +68,7 @@ export default function MTRTracking() {
   const schoolId = (profile as any)?.school?.id || (profile as any)?.school_id
   const [tab, setTab] = useState<'entry' | 'summary' | 'official'>('entry')
   const [classId, setClassId] = useState(1)
+  const allClasses = useLiveQuery(() => db.classes.orderBy('id').toArray(), [], [] as any[])
   const [savedAt, setSavedAt] = useState(0)
   const [printing, setPrinting] = useState(false)
 
@@ -205,15 +205,15 @@ export default function MTRTracking() {
       {tab === 'entry' && (
         <div className="mt-5 space-y-4">
           <div className="no-print flex flex-wrap gap-2">
-            {CLASS_LIST.map((c) => (
+            {(allClasses.length ? allClasses : []).map((cls) => (
               <button
-                key={c}
-                onClick={() => setClassId(c)}
+                key={cls.id}
+                onClick={() => setClassId(cls.id)}
                 className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
-                  classId === c ? 'tab-active' : 'tab-inactive'
+                  classId === cls.id ? 'tab-active' : 'tab-inactive'
                 }`}
               >
-                {CLASS_NAMES[c]}
+                {cls.name}
               </button>
             ))}
           </div>
@@ -264,11 +264,11 @@ export default function MTRTracking() {
                 </tr>
               </thead>
               <tbody>
-                {CLASS_LIST.map((c) => {
-                  const sm = classSummary(c)
+                {(allClasses.length ? allClasses : []).map((cls) => {
+                  const sm = classSummary(cls.id)
                   return (
-                    <tr key={c} className="border-t border-bd-green-100">
-                      <td className="py-3 pr-4 font-medium">{CLASS_NAMES[c]}</td>
+                    <tr key={cls.id} className="border-t border-bd-green-100">
+                      <td className="py-3 pr-4 font-medium">{cls.name}</td>
                       <td className="py-3 pr-4">{sm.total}</td>
                       <td className="py-3 pr-4">{sm.yes}</td>
                       <td className="py-3 pr-4">{sm.no}</td>
